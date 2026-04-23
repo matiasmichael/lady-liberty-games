@@ -20,6 +20,24 @@
     .final{font-size:30px;color:#e8820c;font-weight:bold;margin-bottom:8px}
     button{background:#0d4a6e;color:#fff;border:none;padding:12px 30px;font-size:17px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:bold}
     button:hover{background:#1565a0}
+
+    /* Leaderboard styles */
+    .lb-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:999; }
+    .lb-box { background:#fff; border-radius:20px; padding:28px; max-width:380px; width:90%; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.3); }
+    .lb-box h2 { color:#0d5c3a; font-size:22px; margin-bottom:8px; }
+    .lb-box p { color:#555; font-size:14px; margin-bottom:16px; }
+    .lb-name-input { width:100%; padding:10px 14px; font-size:16px; border:2px solid #a0dfc0; border-radius:10px; font-family:inherit; margin-bottom:14px; }
+    .lb-name-input:focus { outline:none; border-color:#2ea043; }
+    .lb-btn { padding:11px 28px; background:#2ea043; color:#fff; border:none; border-radius:12px; font-size:15px; font-family:inherit; cursor:pointer; font-weight:bold; }
+    .lb-btn:hover { background:#1d8a30; }
+    .lb-btn.secondary { background:#e8f5e9; color:#0d5c3a; margin-left:10px; }
+    .lb-table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    .lb-table th { background:#e8f5e9; color:#0d5c3a; padding:6px 10px; font-size:12px; text-transform:uppercase; letter-spacing:1px; }
+    .lb-table td { padding:7px 10px; border-bottom:1px solid #e0f7e9; }
+    .lb-table tr:first-child td { font-weight:bold; color:#c05c00; }
+    .lb-table tr:nth-child(2) td { color:#0d5c3a; }
+    .lb-medal { font-size:16px; }
+    .lb-you { background:#fffde7 !important; }
   </style>
 </head>
 <body>
@@ -44,7 +62,8 @@
     const keys={};
     let mouseX=null;
 
-    function startGame(){
+    function startGame(){if(!playerName){lbShowNamePrompt(()=>_startGame());return;}_startGame();}
+    function _startGame(){
       overlay.style.display='none';
       boat={x:canvas.width/2-BW/2,y:canvas.height-80};
       obstacles=[];score=0;speed=2.8;spawnInt=1400;
@@ -114,7 +133,7 @@
     }
 
     function endGame(){
-      overlay.innerHTML=`<h2>${score>=30?'�ﱅ Harbor Champion!':'💨 Crash!'}</h2><div class="final">${score} seconds sailed!</div><p>${score>=30?'Amazing captain! Lady Liberty is so proud!':score>=15?'Great sailing! The harbor is tricky!':"Keep practicing — you'll be a captain soon!"}</p><button onclick="startGame()">Sail Again!</button><br><br><a href="../index.html" style="color:#0d4a6e;font-size:13px;">← All Games</a>`;
+      overlay.innerHTML=`<h2>${score>=30?'�ﱅ Harbor Champion!':'💨 Crash!'}</h2><div class="final">${score} seconds sailed!</div><p>${score>=30?'Amazing captain! Lady Liberty is so proud!':score>=15?'Great sailing! The harbor is tricky!':"Keep practicing — you'll be a captain soon!"}</p><button onclick="startGame()">Sail Again!</button><br><br><a href="../index.html" style="color:#0d4a6e;font-size:13px;">← All Games</a>` + lbShowResults(score, '');
       overlay.style.display='flex';
     }
 
@@ -123,6 +142,72 @@
     canvas.addEventListener('mousemove',e=>{if(running)mouseX=e.clientX;});
     canvas.addEventListener('touchmove',e=>{e.preventDefault();mouseX=e.touches[0].clientX;},{passive:false});
     canvas.addEventListener('touchend',()=>mouseX=null);
+
+    // === LEADERBOARD SYSTEM ===
+    let playerName = '';
+    const LB_KEY = 'lb_' + (document.title.split('|')[0].split('—')[0].trim().replace(/[^a-z0-9]/gi,'_').toLowerCase());
+
+    function lbGetScores() {
+      try { return JSON.parse(localStorage.getItem(LB_KEY) || '[]'); } catch(e) { return []; }
+    }
+    function lbSaveScore(name, score) {
+      let scores = lbGetScores();
+      scores.push({ name, score, date: new Date().toLocaleDateString() });
+      scores.sort((a,b) => b.score - a.score);
+      scores = scores.slice(0, 10);
+      localStorage.setItem(LB_KEY, JSON.stringify(scores));
+      return scores;
+    }
+    function lbRenderTable(scores, highlightName) {
+      const medals = ['🥇','🥈','🥉'];
+      return '<table class="lb-table"><tr><th>#</th><th>Player</th><th>Score</th><th>Date</th></tr>' +
+        scores.map((s,i) => `<tr class="${s.name===highlightName?'lb-you':''}"><td>${medals[i]||'#'+(i+1)}</td><td>${s.name}</td><td>${s.score}</td><td>${s.date}</td></tr>`).join('') +
+        '</table>';
+    }
+    function lbShowNamePrompt(callback) {
+      const existing = localStorage.getItem('lb_playername') || '';
+      const scores = lbGetScores();
+      const lbHtml = scores.length > 0 ? '<p style="font-size:12px;color:#888;margin-bottom:6px;">Current leaders:</p>' + lbRenderTable(scores.slice(0,5), '') : '';
+      const d = document.createElement('div');
+      d.className = 'lb-overlay';
+      d.innerHTML = `<div class="lb-box">
+        <h2>👑 Welcome!</h2>
+        <p>Enter your name to track your score on the leaderboard!</p>
+        ${lbHtml}
+        <input class="lb-name-input" id="lbNameIn" placeholder="Your name..." maxlength="20" value="${existing}">
+        <div><button class="lb-btn" onclick="lbConfirmName(this)">Let's Play!</button><button class="lb-btn secondary" onclick="lbSkipName(this)">Skip</button></div>
+      </div>`;
+      document.body.appendChild(d);
+      document.getElementById('lbNameIn').focus();
+      document.getElementById('lbNameIn').onkeydown = (e) => { if(e.key==='Enter') lbConfirmName(document.querySelector('.lb-btn')); };
+      d._callback = callback;
+    }
+    function lbConfirmName(btn) {
+      const val = document.getElementById('lbNameIn').value.trim() || 'Player';
+      playerName = val;
+      localStorage.setItem('lb_playername', val);
+      const d = btn.closest('.lb-overlay');
+      const cb = d._callback;
+      d.remove();
+      if(cb) cb();
+    }
+    function lbSkipName(btn) {
+      playerName = localStorage.getItem('lb_playername') || 'Anonymous';
+      const d = btn.closest('.lb-overlay');
+      const cb = d._callback;
+      d.remove();
+      if(cb) cb();
+    }
+    function lbShowResults(score, extraHtml) {
+      const scores = lbSaveScore(playerName || 'Anonymous', score);
+      const rank = scores.findIndex(s => s.name === (playerName||'Anonymous') && s.score === score) + 1;
+      return `<div style="margin-top:14px">
+        <div style="font-size:13px;color:#0d5c3a;font-weight:bold;margin-bottom:6px;">🏆 Leaderboard</div>
+        ${lbRenderTable(scores, playerName||'Anonymous')}
+        ${rank===1?'<p style="color:#c05c00;font-weight:bold">🥇 New #1! You're on top!</p>':rank<=3?'<p style="color:#0d5c3a;font-weight:bold">Top 3! Great job!</p>':''}
+      </div>`;
+    }
+    // END LEADERBOARD SYSTEM
   </script>
 </body>
 </html>
