@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Torch Catcher 🔦 | Lady Liberty Games</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: 'Georgia', serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      color: #7ee787;
+      text-decoration: none;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    .back-link:hover { opacity: 1; }
+    h1 {
+      font-size: clamp(22px, 4vw, 34px);
+      color: #a8d5a2;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .subtitle { color: #484f58; font-size: 13px; margin-bottom: 16px; font-style: italic; }
+    #score-bar {
+      display: flex;
+      gap: 40px;
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+    .score-item span { color: #7ee787; font-size: 22px; font-weight: bold; }
+    #canvas-wrap {
+      position: relative;
+      border: 2px solid #2ea043;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(46,160,67,0.15);
+    }
+    canvas { display: block; background: #0d2818; }
+    #overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(13,17,23,0.88);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+    }
+    #overlay h2 { font-size: 28px; color: #a8d5a2; margin-bottom: 12px; }
+    #overlay p { color: #8b949e; margin-bottom: 24px; font-size: 15px; line-height: 1.6; }
+    #overlay .final { font-size: 32px; color: #7ee787; font-weight: bold; margin-bottom: 8px; }
+    button {
+      background: #2ea043;
+      color: #fff;
+      border: none;
+      padding: 14px 36px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { background: #3fb950; transform: scale(1.05); }
+    button:active { transform: scale(0.97); }
+    .hint { margin-top: 14px; font-size: 12px; color: #484f58; }
+  </style>
+</head>
+<body>
+  <a class="back-link" href="../index.html">← All Games</a>
+  <h1>🔦 Torch Catcher</h1>
+  <p class="subtitle">"Keep the flame of freedom alive!"</p>
+
+  <div id="score-bar">
+    <div class="score-item">Score: <span id="score">0</span></div>
+    <div class="score-item">Lives: <span id="lives">❤️❤️❤️</span></div>
+    <div class="score-item">Best: <span id="best">0</span></div>
+  </div>
+
+  <div id="canvas-wrap">
+    <canvas id="c" width="480" height="520"></canvas>
+    <div id="overlay">
+      <h2>🗽 Torch Catcher</h2>
+      <p>Lady Liberty keeps dropping her torch!<br>Move the catcher to save the flames.<br><br>← → Arrow keys &nbsp;|&nbsp; A/D keys &nbsp;|&nbsp; Touch/drag on mobile</p>
+      <button onclick="startGame()">Light It Up!</button>
+      <div class="hint">Pro tip: The torches speed up over time.</div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const bestEl  = document.getElementById('best');
+
+    let score, lives, best=0, torches, catcher, raf, speed, lastDrop, dropInterval, gameRunning;
+    const CATCHER_W = 90, CATCHER_H = 18;
+    const TORCH_SIZE = 28;
+    const keys = {};
+    let touchX = null;
+
+    function startGame() {
+      overlay.style.display = 'none';
+      score = 0; lives = 3; speed = 3.5;
+      torches = [];
+      lastDrop = 0; dropInterval = 1400;
+      catcher = { x: canvas.width/2 - CATCHER_W/2, y: canvas.height - 40 };
+      gameRunning = true;
+      scoreEl.textContent = 0;
+      livesEl.textContent = '❤️'.repeat(lives);
+      cancelAnimationFrame(raf);
+      loop(0);
+    }
+
+    function loop(ts) {
+      if (!gameRunning) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Move catcher
+      const speed_c = 8;
+      if (keys['ArrowLeft'] || keys['a'] || keys['A']) catcher.x -= speed_c;
+      if (keys['ArrowRight'] || keys['d'] || keys['D']) catcher.x += speed_c;
+      if (touchX !== null) {
+        const rect = canvas.getBoundingClientRect();
+        const tx = touchX - rect.left - CATCHER_W/2;
+        catcher.x += (tx - catcher.x) * 0.18;
+      }
+      catcher.x = Math.max(0, Math.min(canvas.width - CATCHER_W, catcher.x));
+
+      // Drop new torch
+      if (ts - lastDrop > dropInterval) {
+        torches.push({ x: Math.random() * (canvas.width - TORCH_SIZE), y: -TORCH_SIZE, caught: false });
+        lastDrop = ts;
+        dropInterval = Math.max(500, dropInterval - 18);
+        speed = Math.min(11, speed + 0.15);
+      }
+
+      // Update torches
+      torches.forEach(t => { if (!t.caught) t.y += speed; });
+
+      // Catch / miss detection
+      torches.forEach(t => {
+        if (t.caught) return;
+        if (t.y + TORCH_SIZE >= catcher.y &&
+            t.x + TORCH_SIZE > catcher.x &&
+            t.x < catcher.x + CATCHER_W) {
+          t.caught = true;
+          score++;
+          scoreEl.textContent = score;
+          if (score > best) { best = score; bestEl.textContent = best; }
+          spawnParticles(t.x + TORCH_SIZE/2, catcher.y);
+        } else if (t.y > canvas.height) {
+          t.caught = true; // remove
+          lives--;
+          livesEl.textContent = '❤️'.repeat(Math.max(0,lives)) + (lives <= 0 ? '' : '');
+          if (lives <= 0) { endGame(); return; }
+        }
+      });
+      torches = torches.filter(t => t.y <= canvas.height + 10);
+
+      // Draw torches
+      torches.forEach(t => {
+        if (t.caught) return;
+        ctx.font = TORCH_SIZE + 'px serif';
+        ctx.fillText('🔥', t.x, t.y + TORCH_SIZE);
+      });
+
+      // Draw catcher (Lady Liberty's hand)
+      const grad = ctx.createLinearGradient(catcher.x, 0, catcher.x + CATCHER_W, 0);
+      grad.addColorStop(0, '#2ea043');
+      grad.addColorStop(0.5, '#7ee787');
+      grad.addColorStop(1, '#2ea043');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(catcher.x, catcher.y, CATCHER_W, CATCHER_H, 8);
+      ctx.fill();
+      ctx.font = '22px serif';
+      ctx.fillText('🗽', catcher.x + CATCHER_W/2 - 11, catcher.y - 4);
+
+      // Particles
+      updateParticles();
+
+      raf = requestAnimationFrame(loop);
+    }
+
+    // Simple particle system
+    let particles = [];
+    function spawnParticles(x, y) {
+      for (let i = 0; i < 10; i++) {
+        particles.push({
+          x, y,
+          vx: (Math.random()-0.5)*5,
+          vy: -(Math.random()*4+1),
+          alpha: 1,
+          color: ['#ffa500','#ff6b00','#ffdd00','#7ee787'][Math.floor(Math.random()*4)],
+          r: Math.random()*4+2
+        });
+      }
+    }
+    function updateParticles() {
+      particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.alpha -= 0.04;
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+      particles = particles.filter(p => p.alpha > 0);
+    }
+
+    function endGame() {
+      gameRunning = false;
+      cancelAnimationFrame(raf);
+      overlay.innerHTML = `
+        <h2>Liberty Extinguished! 🕯️</h2>
+        <div class="final">Score: ${score}</div>
+        <p>${score >= 20 ? '🏆 Lady Liberty is proud!' : score >= 10 ? '🗽 Not bad, keep the flame alive!' : "You'll do better next time, Peretz."}</p>
+        <button onclick="startGame()">Try Again</button>
+        <br><br><a href="../index.html" style="color:#7ee787;font-size:13px;">← All Games</a>
+      `;
+      overlay.style.display = 'flex';
+    }
+
+    // Input
+    document.addEventListener('keydown', e => { keys[e.key] = true; });
+    document.addEventListener('keyup',   e => { keys[e.key] = false; });
+    canvas.addEventListener('touchmove', e => { touchX = e.touches[0].clientX; e.preventDefault(); }, {passive:false});
+    canvas.addEventListener('touchend',  () => { touchX = null; });
+    canvas.addEventListener('mousemove', e => {
+      if (gameRunning) {
+        const rect = canvas.getBoundingClientRect();
+        catcher.x = (e.clientX - rect.left) - CATCHER_W/2;
+      }
+    });
+  </script>
+</body>
+</html>
