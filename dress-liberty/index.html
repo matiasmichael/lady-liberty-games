@@ -13,9 +13,8 @@
     .game-area{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;max-width:900px;margin:0 auto}
     .liberty-display{background:rgba(255,255,255,0.9);border:2px solid #a0dfc0;border-radius:20px;padding:20px;min-width:240px;display:flex;flex-direction:column;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.08)}
     .liberty-display h3{color:#0d5c3a;font-size:14px;margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
-    #liberty-preview{font-size:80px;line-height:1;text-align:center;margin:8px 0}
-    #outfit-display{font-size:28px;margin-top:4px;text-align:center;min-height:36px}
-    #color-bar{width:100%;height:16px;border-radius:8px;margin-top:10px;transition:background 0.3s}
+    #liberty-canvas{border-radius:12px;border:1px solid #e0f7e9}
+    #outfit-label{font-size:13px;color:#555;margin-top:8px;text-align:center;min-height:20px;font-style:italic}
     .panels{display:flex;flex-direction:column;gap:12px;max-width:500px}
     .panel{background:rgba(255,255,255,0.9);border:2px solid #a0dfc0;border-radius:16px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,0.07)}
     .panel h3{color:#0d5c3a;font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
@@ -41,44 +40,43 @@
   <div class="game-area">
     <div class="liberty-display">
       <h3>Your Lady Liberty</h3>
-      <div id="liberty-preview">🗽</div>
-      <div id="outfit-display"></div>
-      <div id="color-bar" style="background:#5b9e6e"></div>
+      <canvas id="liberty-canvas" width="200" height="280"></canvas>
+      <div id="outfit-label">Classic Liberty 🗽</div>
     </div>
 
     <div class="panels">
       <div class="panel">
         <h3>👑 Crown Style</h3>
         <div class="options" id="crowns">
-          <button class="opt-btn active" data-cat="crown" data-val="💫">✨ Sparkle</button>
-          <button class="opt-btn" data-cat="crown" data-val="🌟">⭐ Star</button>
-          <button class="opt-btn" data-cat="crown" data-val="🌸">🌸 Flower</button>
-          <button class="opt-btn" data-cat="crown" data-val="🌈">🌈 Rainbow</button>
-          <button class="opt-btn" data-cat="crown" data-val="🥂">🥂 Party</button>
-          <button class="opt-btn" data-cat="crown" data-val="👑">👑 Gold</button>
+          <button class="opt-btn active" data-cat="crown" data-val="classic">✨ Classic</button>
+          <button class="opt-btn" data-cat="crown" data-val="star">⭐ Star</button>
+          <button class="opt-btn" data-cat="crown" data-val="flower">🌸 Flower</button>
+          <button class="opt-btn" data-cat="crown" data-val="rainbow">🌈 Rainbow</button>
+          <button class="opt-btn" data-cat="crown" data-val="party">🎉 Party</button>
+          <button class="opt-btn" data-cat="crown" data-val="gold">👑 Gold</button>
         </div>
       </div>
       <div class="panel">
         <h3>👗 Outfit</h3>
         <div class="options" id="outfits">
-          <button class="opt-btn active" data-cat="outfit" data-val="💫">✨ Classic Robe</button>
-          <button class="opt-btn" data-cat="outfit" data-val="🌻">🌻 Sunny Dress</button>
-          <button class="opt-btn" data-cat="outfit" data-val="🌟">⭐ Starry Gown</button>
-          <button class="opt-btn" data-cat="outfit" data-val="🌈">🌈 Rainbow Robe</button>
-          <button class="opt-btn" data-cat="outfit" data-val="💜">💜 Purple Princess</button>
-          <button class="opt-btn" data-cat="outfit" data-val="♥️">♥️️ Superhero</button>
+          <button class="opt-btn active" data-cat="outfit" data-val="robe">✨ Classic Robe</button>
+          <button class="opt-btn" data-cat="outfit" data-val="sunny">🌻 Sunny Dress</button>
+          <button class="opt-btn" data-cat="outfit" data-val="starry">⭐ Starry Gown</button>
+          <button class="opt-btn" data-cat="outfit" data-val="rainbow">🌈 Rainbow Robe</button>
+          <button class="opt-btn" data-cat="outfit" data-val="princess">💜 Princess</button>
+          <button class="opt-btn" data-cat="outfit" data-val="super">⚡ Superhero</button>
         </div>
       </div>
       <div class="panel">
-        <h3>🎈 Accessory</h3>
+        <h3>🎀 Accessory</h3>
         <div class="options" id="accessories">
-          <button class="opt-btn active" data-cat="acc" data-val="">None</button>
-          <button class="opt-btn" data-cat="acc" data-val="👗">👗 Scarf</button>
-          <button class="opt-btn" data-cat="acc" data-val="💓">💓 Heart</button>
-          <button class="opt-btn" data-cat="acc" data-val="🦄">🦄 Wings</button>
-          <button class="opt-btn" data-cat="acc" data-val="🌼">🌼 Flowers</button>
-          <button class="opt-btn" data-cat="acc" data-val="😎">😎 Sunglasses</button>
-          <button class="opt-btn" data-cat="acc" data-val="🌈">🌈 Rainbow</button>
+          <button class="opt-btn active" data-cat="acc" data-val="none">None</button>
+          <button class="opt-btn" data-cat="acc" data-val="scarf">🧣 Scarf</button>
+          <button class="opt-btn" data-cat="acc" data-val="heart">💓 Heart</button>
+          <button class="opt-btn" data-cat="acc" data-val="wings">🦋 Wings</button>
+          <button class="opt-btn" data-cat="acc" data-val="flowers">🌺 Flowers</button>
+          <button class="opt-btn" data-cat="acc" data-val="shades">😎 Sunglasses</button>
+          <button class="opt-btn" data-cat="acc" data-val="rainbow">🌈 Rainbow</button>
         </div>
       </div>
       <div class="panel">
@@ -104,9 +102,14 @@
       {c:'#a29bfe',label:'Lavender'},
       {c:'#fdcb6e',label:'Peachy'},
       {c:'#ffffff',label:'Pure White'},
+      {c:'#fd79a8',label:'Hot Pink'},
+      {c:'#00cec9',label:'Teal'},
+      {c:'#6c5ce7',label:'Purple'},
+      {c:'#e17055',label:'Coral'},
     ];
-    const colorsDiv=document.getElementById('colors');
+    const colorsDivEl=document.getElementById('colors');
     let currentColor=COLORS[0].c;
+    let currentColorLabel=COLORS[0].label;
     COLORS.forEach(cl=>{
       const s=document.createElement('div');
       s.className='color-swatch'+(cl.c===currentColor?' active':'');
@@ -114,12 +117,12 @@
       s.title=cl.label;
       s.onclick=()=>{
         document.querySelectorAll('.color-swatch').forEach(x=>x.classList.remove('active'));
-        s.classList.add('active');currentColor=cl.c;updatePreview();
+        s.classList.add('active');currentColor=cl.c;currentColorLabel=cl.label;draw();
       };
-      colorsDiv.appendChild(s);
+      colorsDivEl.appendChild(s);
     });
 
-    let choices={crown:'💫',outfit:'💫',acc:''};
+    let choices={crown:'classic',outfit:'robe',acc:'none'};
 
     document.querySelectorAll('.opt-btn').forEach(btn=>{
       btn.addEventListener('click',()=>{
@@ -127,38 +130,277 @@
         document.querySelectorAll(`[data-cat="${cat}"]`).forEach(b=>b.classList.remove('active'));
         btn.classList.add('active');
         choices[cat]=btn.dataset.val;
-        updatePreview();
+        draw();
       });
     });
 
-    function updatePreview(){
-      document.getElementById('liberty-preview').textContent='🗽';
-      document.getElementById('outfit-display').textContent=choices.crown+' '+choices.outfit+(choices.acc?' '+choices.acc:'');
-      document.getElementById('color-bar').style.background=currentColor;
+    const canvas=document.getElementById('liberty-canvas');
+    const ctx=canvas.getContext('2d');
+    const W=200,H=280;
+
+    // Outfit color mappings
+    const outfitColors={
+      robe: null, // uses currentColor
+      sunny: '#ffd700',
+      starry: '#1a237e',
+      rainbow: null, // special
+      princess: '#ce93d8',
+      super: '#ef5350',
+    };
+
+    function hexToRgb(hex){
+      const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+      return {r,g,b};
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+
+      // Sky background
+      const skyGrad=ctx.createLinearGradient(0,0,0,H);
+      skyGrad.addColorStop(0,'#b8f0ff');
+      skyGrad.addColorStop(1,'#d4f5e9');
+      ctx.fillStyle=skyGrad;
+      ctx.fillRect(0,0,W,H);
+
+      // Ground/water at bottom
+      ctx.fillStyle='#7dd8f8';
+      ctx.fillRect(0,H-40,W,40);
+      ctx.fillStyle='#3ab5e5';
+      ctx.fillRect(0,H-28,W,28);
+
+      // Pedestal
+      ctx.fillStyle='#e8d5b0';
+      ctx.fillRect(70,H-80,60,42);
+      ctx.fillStyle='#d4c4a0';
+      ctx.fillRect(65,H-85,70,12);
+      ctx.fillRect(60,H-70,80,8);
+
+      // === BODY / ROBE ===
+      const robeColor = (choices.outfit==='robe'||choices.outfit==='princess'||choices.outfit==='super') ? currentColor : (outfitColors[choices.outfit]||currentColor);
+
+      if(choices.outfit==='rainbow'){
+        // Rainbow gradient robe
+        const rainbowGrad=ctx.createLinearGradient(50,120,150,220);
+        rainbowGrad.addColorStop(0,'#ff6b6b');
+        rainbowGrad.addColorStop(0.17,'#ffd700');
+        rainbowGrad.addColorStop(0.33,'#7fff7f');
+        rainbowGrad.addColorStop(0.5,'#7dd8f8');
+        rainbowGrad.addColorStop(0.67,'#a29bfe');
+        rainbowGrad.addColorStop(0.83,'#ff9ff3');
+        rainbowGrad.addColorStop(1,'#ff6b6b');
+        ctx.fillStyle=rainbowGrad;
+      } else if(choices.outfit==='starry'){
+        ctx.fillStyle='#1a237e';
+      } else if(choices.outfit==='super'){
+        ctx.fillStyle='#ef5350';
+      } else {
+        ctx.fillStyle=robeColor;
+      }
+      // Robe shape (trapezoid)
+      ctx.beginPath();
+      ctx.moveTo(80,135);ctx.lineTo(120,135);
+      ctx.lineTo(145,H-80);ctx.lineTo(55,H-80);
+      ctx.closePath();ctx.fill();
+
+      // Robe outline
+      ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1.5;ctx.stroke();
+
+      // Robe details by outfit
+      if(choices.outfit==='starry'){
+        // Stars on gown
+        ctx.fillStyle='#fff';ctx.font='10px serif';
+        [[90,155],[110,170],[85,190],[115,200],[95,215]].forEach(([x,y])=>ctx.fillText('★',x,y));
+      } else if(choices.outfit==='super'){
+        // Cape
+        ctx.fillStyle='rgba(255,200,0,0.85)';
+        ctx.beginPath();ctx.moveTo(118,138);ctx.lineTo(148,160);ctx.lineTo(142,H-80);ctx.lineTo(118,H-80);ctx.closePath();ctx.fill();
+        // S on chest
+        ctx.fillStyle='#ffd700';ctx.font='bold 18px serif';ctx.textAlign='center';
+        ctx.fillText('S',100,165);ctx.textAlign='left';
+      } else if(choices.outfit==='sunny'){
+        // Flower details
+        ctx.fillStyle='#ff9ff3';ctx.font='16px serif';
+        [[88,160],[108,175],[92,195]].forEach(([x,y])=>ctx.fillText('🌸',x,y));
+      } else if(choices.outfit==='princess'){
+        // Sparkles
+        ctx.fillStyle='rgba(255,255,255,0.8)';
+        [[85,155],[112,168],[90,190],[108,205]].forEach(([x,y])=>{
+          ctx.font='12px serif';ctx.textAlign='center';ctx.fillText('✨',x,y);
+        });
+        ctx.textAlign='left';
+      }
+
+      // === SKIN (arms and face) ===
+      const skinColor='#f5deb3';
+      // Arm holding torch (right side)
+      ctx.fillStyle=skinColor;
+      ctx.beginPath();ctx.moveTo(118,135);ctx.lineTo(130,100);ctx.lineTo(138,103);ctx.lineTo(126,138);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=1;ctx.stroke();
+      // Left arm down
+      ctx.fillStyle=skinColor;
+      ctx.beginPath();ctx.moveTo(82,135);ctx.lineTo(68,155);ctx.lineTo(74,158);ctx.lineTo(88,138);ctx.closePath();ctx.fill();
+
+      // === TORCH ===
+      // Handle
+      ctx.fillStyle='#8B6914';
+      ctx.fillRect(130,72,5,30);
+      // Flame
+      ctx.fillStyle='#ff6b35';
+      ctx.beginPath();ctx.ellipse(132,68,7,12,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#ffd700';
+      ctx.beginPath();ctx.ellipse(132,66,4,8,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.7)';
+      ctx.beginPath();ctx.ellipse(132,64,2,5,0,0,Math.PI*2);ctx.fill();
+
+      // === NECK ===
+      ctx.fillStyle=skinColor;
+      ctx.fillRect(93,110,14,26);
+
+      // === HEAD ===
+      ctx.fillStyle=skinColor;
+      ctx.beginPath();ctx.ellipse(100,95,22,26,0,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=1;ctx.stroke();
+
+      // Face
+      // Eyes
+      ctx.fillStyle='#5d4037';
+      ctx.beginPath();ctx.ellipse(92,90,3,3.5,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(108,90,3,3.5,0,0,Math.PI*2);ctx.fill();
+      // Eye shine
+      ctx.fillStyle='white';
+      ctx.beginPath();ctx.ellipse(93,89,1,1,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(109,89,1,1,0,0,Math.PI*2);ctx.fill();
+      // Smile
+      ctx.strokeStyle='#8B6914';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(100,98,7,0.1,Math.PI-0.1);ctx.stroke();
+      // Cheeks
+      ctx.fillStyle='rgba(255,150,150,0.35)';
+      ctx.beginPath();ctx.ellipse(88,97,5,3.5,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(112,97,5,3.5,0,0,Math.PI*2);ctx.fill();
+
+      // Hair
+      ctx.fillStyle='#8B6914';
+      ctx.beginPath();ctx.ellipse(100,82,20,10,-0.1,Math.PI,Math.PI*2);ctx.fill();
+
+      // === CROWN ===
+      const crownY=65;
+      if(choices.crown==='classic'||choices.crown==='gold'){
+        const cColor=choices.crown==='gold'?'#ffd700':'#b8c5a0';
+        ctx.fillStyle=cColor;
+        ctx.beginPath();
+        ctx.moveTo(82,crownY+8);ctx.lineTo(84,crownY-2);
+        ctx.lineTo(88,crownY+4);ctx.lineTo(93,crownY-8);
+        ctx.lineTo(100,crownY+2);ctx.lineTo(107,crownY-8);
+        ctx.lineTo(112,crownY+4);ctx.lineTo(116,crownY-2);
+        ctx.lineTo(118,crownY+8);ctx.closePath();ctx.fill();
+        ctx.strokeStyle=choices.crown==='gold'?'#b8860b':'#5b9e6e';ctx.lineWidth=1.5;ctx.stroke();
+        // Jewels on crown
+        const jewelColors=['#ff6b6b','#7dd8f8','#ffd700','#a29bfe','#7fff7f'];
+        [[87,crownY+4],[93,crownY-2],[100,crownY+4],[107,crownY-2],[113,crownY+4]].forEach(([x,y],i)=>{
+          ctx.fillStyle=jewelColors[i%jewelColors.length];
+          ctx.beginPath();ctx.ellipse(x,y,3,3,0,0,Math.PI*2);ctx.fill();
+        });
+      } else if(choices.crown==='star'){
+        ctx.font='22px serif';ctx.textAlign='center';
+        ctx.fillText('⭐',100,crownY+2);
+        ctx.fillText('✨',86,crownY+4);ctx.fillText('✨',114,crownY+4);
+        ctx.textAlign='left';
+      } else if(choices.crown==='flower'){
+        ctx.font='20px serif';ctx.textAlign='center';
+        ctx.fillText('🌸',100,crownY);
+        ctx.fillText('🌺',85,crownY+4);ctx.fillText('🌺',115,crownY+4);
+        ctx.textAlign='left';
+      } else if(choices.crown==='rainbow'){
+        // Rainbow arc crown
+        const rainColors=['#ff6b6b','#ff9f43','#ffd700','#7fff7f','#7dd8f8','#a29bfe','#ff9ff3'];
+        rainColors.forEach((col,i)=>{
+          ctx.strokeStyle=col;ctx.lineWidth=3;
+          ctx.beginPath();ctx.arc(100,crownY+8,12+i*3,Math.PI,Math.PI*2);ctx.stroke();
+        });
+        ctx.font='12px serif';ctx.textAlign='center';ctx.fillText('🌈',100,crownY);ctx.textAlign='left';
+      } else if(choices.crown==='party'){
+        ctx.font='24px serif';ctx.textAlign='center';
+        ctx.fillText('🎉',100,crownY);
+        ctx.fillText('🎊',84,crownY+4);ctx.fillText('🎊',116,crownY+4);
+        ctx.textAlign='left';
+      }
+
+      // === ACCESSORIES ===
+      if(choices.acc==='scarf'){
+        ctx.strokeStyle='#ff6b6b';ctx.lineWidth=6;
+        ctx.beginPath();ctx.moveTo(82,118);ctx.bezierCurveTo(90,122,110,122,118,118);ctx.stroke();
+        ctx.strokeStyle='#ffd700';ctx.lineWidth=3;
+        ctx.beginPath();ctx.moveTo(82,118);ctx.bezierCurveTo(90,122,110,122,118,118);ctx.stroke();
+      } else if(choices.acc==='heart'){
+        ctx.font='20px serif';ctx.textAlign='center';
+        ctx.fillText('💓',100,112);ctx.fillText('💕',75,130);ctx.fillText('💕',125,130);
+        ctx.textAlign='left';
+      } else if(choices.acc==='wings'){
+        ctx.font='28px serif';
+        ctx.save();ctx.translate(60,135);ctx.scale(-1,1);ctx.fillText('🦋',0,0);ctx.restore();
+        ctx.fillText('🦋',128,135);
+      } else if(choices.acc==='flowers'){
+        ctx.font='16px serif';ctx.textAlign='center';
+        ctx.fillText('🌺',100,112);
+        [[72,138],[128,138],[68,165],[132,165]].forEach(([x,y])=>ctx.fillText('🌸',x,y));
+        ctx.textAlign='left';
+      } else if(choices.acc==='shades'){
+        // Draw cool sunglasses
+        ctx.strokeStyle='#333';ctx.lineWidth=2;
+        ctx.beginPath();ctx.rect(83,87,14,10);ctx.stroke();
+        ctx.beginPath();ctx.rect(103,87,14,10);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(97,92);ctx.lineTo(103,92);ctx.stroke();
+        ctx.fillStyle='rgba(0,150,255,0.4)';
+        ctx.fillRect(83,87,14,10);ctx.fillRect(103,87,14,10);
+      } else if(choices.acc==='rainbow'){
+        ctx.font='18px serif';ctx.textAlign='center';
+        ctx.fillText('🌈',100,112);
+        ctx.font='14px serif';
+        ctx.fillText('🌈',74,140);ctx.fillText('🌈',126,140);
+        ctx.textAlign='left';
+      }
+
+      // Update outfit label
+      const crownLabels={classic:'Classic Crown',star:'Star Crown ⭐',flower:'Flower Crown 🌸',rainbow:'Rainbow Crown 🌈',party:'Party Crown 🎉',gold:'Gold Crown 👑'};
+      const outfitLabels={robe:'Classic Robe',sunny:'Sunny Dress 🌻',starry:'Starry Gown ⭐',rainbow:'Rainbow Robe 🌈',princess:'Princess Gown 💜',super:'Superhero ⚡'};
+      const accLabels={none:'',scarf:' + Scarf 🧣',heart:' + Hearts 💓',wings:' + Wings 🦋',flowers:' + Flowers 🌺',shades:' + Shades 😎',rainbow:' + Rainbow 🌈'};
+      document.getElementById('outfit-label').textContent =
+        outfitLabels[choices.outfit] + ' · ' + crownLabels[choices.crown] + accLabels[choices.acc] + ' · ' + currentColorLabel;
     }
 
     function randomize(){
-      const allBtns={crown:[...document.querySelectorAll('[data-cat="crown"]')],outfit:[...document.querySelectorAll('[data-cat="outfit"]')],acc:[...document.querySelectorAll('[data-cat="acc"]')]};
-      Object.keys(allBtns).forEach(cat=>{
-        const btns=allBtns[cat];
-        const pick=btns[Math.floor(Math.random()*btns.length)];
-        document.querySelectorAll(`[data-cat="${cat}"]`).forEach(b=>b.classList.remove('active'));
-        pick.classList.add('active');choices[cat]=pick.dataset.val;
-      });
+      const crownOpts=['classic','star','flower','rainbow','party','gold'];
+      const outfitOpts=['robe','sunny','starry','rainbow','princess','super'];
+      const accOpts=['none','scarf','heart','wings','flowers','shades','rainbow'];
+      choices.crown=crownOpts[Math.floor(Math.random()*crownOpts.length)];
+      choices.outfit=outfitOpts[Math.floor(Math.random()*outfitOpts.length)];
+      choices.acc=accOpts[Math.floor(Math.random()*accOpts.length)];
       const rndColor=COLORS[Math.floor(Math.random()*COLORS.length)];
-      document.querySelectorAll('.color-swatch').forEach(x=>x.classList.remove('active'));
-      document.querySelector(`.color-swatch[style*="${rndColor.c}"]`)?.classList.add('active');
-      currentColor=rndColor.c;
-      updatePreview();
+      currentColor=rndColor.c;currentColorLabel=rndColor.label;
+      // Update button states
+      document.querySelectorAll('.opt-btn').forEach(b=>{
+        const cat=b.dataset.cat;
+        b.classList.toggle('active', b.dataset.val===choices[cat]);
+      });
+      document.querySelectorAll('.color-swatch').forEach(s=>{
+        s.classList.toggle('active', s.style.background===currentColor||s.title===currentColorLabel);
+      });
+      draw();
     }
 
     function saveIt(){
+      // Download canvas as PNG
+      const link=document.createElement('a');
+      link.download='lady-liberty-look.png';
+      link.href=canvas.toDataURL('image/png');
+      link.click();
       const msg=document.getElementById('save-msg');
-      msg.textContent='💚 Saved! Lady Liberty loves her new look!';
+      msg.textContent='📸 Saved! Lady Liberty loves her new look!';
       setTimeout(()=>msg.textContent='',3000);
     }
 
-    updatePreview();
+    draw();
   </script>
 </body>
 </html>
