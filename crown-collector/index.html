@@ -3,136 +3,191 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Crown Collector ⭐</title>
+  <title>Crown Jewels Memory ⭐ — Lady Liberty Games</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#0a0a1a; font-family:'Georgia',serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; overflow:hidden; }
-    .back { position:fixed; top:12px; left:12px; color:#ffd700; text-decoration:none; font-size:14px; }
-    h1 { font-size:clamp(20px,4vw,32px); color:#ffd700; margin-bottom:4px; text-align:center; }
-    .sub { color:#888; font-size:13px; margin-bottom:12px; font-style:italic; }
-    #score-bar { display:flex; gap:30px; margin-bottom:12px; font-size:16px; color:#fff; }
-    #score-bar span { color:#ffd700; font-weight:bold; font-size:20px; }
-    #canvas-wrap { position:relative; border:2px solid #ffd700; border-radius:12px; overflow:hidden; box-shadow:0 0 40px rgba(255,215,0,0.2); }
-    canvas { display:block; background:#0a0a1a; }
-    #overlay { position:absolute; inset:0; background:rgba(10,10,26,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px; }
-    #overlay h2 { font-size:26px; color:#ffd700; margin-bottom:10px; }
-    #overlay p { color:#aaa; margin-bottom:20px; font-size:14px; line-height:1.6; }
-    .final { font-size:30px; color:#ffd700; font-weight:bold; margin-bottom:8px; }
-    button { background:#ffd700; color:#0a0a1a; border:none; padding:12px 32px; font-size:17px; border-radius:8px; cursor:pointer; font-family:inherit; font-weight:bold; }
-    button:hover { background:#ffe44d; }
-    .hint { margin-top:12px; font-size:11px; color:#555; }
+    body {
+      font-family:'Georgia',serif;
+      min-height:100vh;
+      background:linear-gradient(160deg,#b8f0ff 0%,#d4f5e9 50%,#c2eedb 100%);
+      display:flex; flex-direction:column; align-items:center;
+      padding:20px 16px 60px;
+    }
+    .back { display:inline-block; margin-bottom:16px; color:#0d5c3a; text-decoration:none; font-size:14px; font-weight:bold; align-self:flex-start; }
+    .back:hover { text-decoration:underline; }
+    .crown-icon { font-size:56px; margin-bottom:6px; }
+    h1 { font-size:clamp(20px,5vw,36px); color:#0d5c3a; text-shadow:2px 2px 0 rgba(255,255,255,0.8); margin-bottom:4px; text-align:center; }
+    .sub { color:#1a7a4a; font-style:italic; font-size:14px; margin-bottom:6px; text-align:center; }
+    .stats { display:flex; gap:24px; margin:12px 0; font-size:15px; color:#0d5c3a; font-weight:bold; }
+    .stats span { background:rgba(255,255,255,0.85); padding:6px 16px; border-radius:20px; border:1px solid #a0dfc0; }
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      max-width:420px;
+      width:100%;
+      margin:10px auto;
+    }
+    .card {
+      aspect-ratio:1;
+      cursor:pointer;
+      position:relative;
+      transform-style:preserve-3d;
+      transition:transform 0.4s ease;
+      border-radius:14px;
+    }
+    .card.flipped { transform:rotateY(180deg); }
+    .card.matched { animation:matchPop 0.35s ease; }
+    @keyframes matchPop { 0%{transform:rotateY(180deg) scale(1)} 50%{transform:rotateY(180deg) scale(1.18)} 100%{transform:rotateY(180deg) scale(1)} }
+    .card-face {
+      position:absolute; inset:0;
+      border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:clamp(26px,6vw,38px);
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+    }
+    .card-back {
+      background:linear-gradient(135deg,#0d5c3a,#1a7a4a);
+      border:2px solid #a0dfc0;
+      box-shadow:0 3px 10px rgba(0,0,0,0.12);
+      color:rgba(255,255,255,0.4);
+      font-size:20px;
+    }
+    .card-front {
+      background:rgba(255,255,255,0.95);
+      border:2px solid #a0dfc0;
+      box-shadow:0 3px 10px rgba(0,0,0,0.12);
+      transform:rotateY(180deg);
+    }
+    .card.matched .card-front {
+      background:linear-gradient(135deg,#fffde7,#fff59d);
+      border-color:#ffd700;
+      box-shadow:0 0 18px rgba(255,215,0,0.5);
+    }
+    .msg { min-height:32px; font-size:15px; color:#0d5c3a; font-weight:bold; margin:10px 0; text-align:center; }
+    .btn { padding:12px 32px; background:#2ea043; color:#fff; border:none; border-radius:14px; font-size:16px; font-family:'Georgia',serif; cursor:pointer; font-weight:bold; margin-top:10px; }
+    .btn:hover { background:#1d8a30; }
+    .crown-fill { display:flex; gap:4px; align-items:center; margin:8px 0; flex-wrap:wrap; justify-content:center; }
+    .jewel { font-size:22px; opacity:0.25; transition:opacity 0.4s,transform 0.4s; }
+    .jewel.lit { opacity:1; transform:scale(1.2); }
+    .win-msg { text-align:center; background:rgba(255,255,255,0.95); border:2px solid #ffd700; border-radius:20px; padding:24px; max-width:380px; width:100%; margin-top:12px; box-shadow:0 8px 28px rgba(255,215,0,0.3); display:none; }
+    .win-msg h2 { color:#0d5c3a; font-size:24px; margin-bottom:8px; }
+    .win-msg p { color:#555; margin-bottom:16px; font-size:14px; }
+    .trophy { font-size:54px; }
   </style>
 </head>
 <body>
-  <a class="back" href="../index.html">← All Games</a>
-  <h1>⭐ Crown Collector</h1>
-  <p class="sub">Catch falling stars to fill Lady Liberty's crown!</p>
-  <div id="score-bar">Stars: <span id="score">0</span> &nbsp;|&nbsp; Best: <span id="best">0</span> &nbsp;|&nbsp; Lives: <span id="lives">❤️❤️❤️</span></div>
-  <div id="canvas-wrap">
-    <canvas id="c" width="400" height="500"></canvas>
-    <div id="overlay">
-      <h2>⭐ Crown Collector</h2>
-      <p>Stars are falling from the sky!<br>Move Lady Liberty's crown to catch them all!<br><br>← → Arrow keys | Mouse | Touch</p>
-      <button onclick="startGame()">Catch Stars!</button>
-      <div class="hint">Watch out — bombs also fall!</div>
-    </div>
+  <a class="back" href="../index.html">← Back to Games</a>
+  <div class="crown-icon">👑</div>
+  <h1>Crown Jewels Memory</h1>
+  <p class="sub">Match all the jewel pairs to fill Lady Liberty's crown!</p>
+
+  <div class="stats">
+    <span>Moves: <span id="moves">0</span></span>
+    <span>Pairs: <span id="pairs">0</span>/8</span>
+    <span>Time: <span id="timer">0s</span></span>
+  </div>
+
+  <p style="font-size:13px;color:#1a7a4a;margin-bottom:6px;">Crown progress:</p>
+  <div class="crown-fill" id="crownFill"></div>
+
+  <div class="msg" id="msg">Flip two cards to find matching jewels! 👑</div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="win-msg" id="winMsg">
+    <div class="trophy">🏆</div>
+    <h2>Crown Complete! 👑✨</h2>
+    <p id="winText"></p>
+    <button class="btn" onclick="startGame()">Play Again!</button>
+    <br><br>
+    <a href="../index.html" style="color:#0d5c3a;font-size:13px;">← All Games</a>
   </div>
 
   <script>
-    const canvas=document.getElementById('c'), ctx=canvas.getContext('2d');
-    const overlay=document.getElementById('overlay');
-    const scoreEl=document.getElementById('score'), bestEl=document.getElementById('best'), livesEl=document.getElementById('lives');
-    let score,lives,best=0,items,catcher,speed,dropInt,lastDrop,raf,running;
-    const CW=80,CH=20;
-    const keys={};
-    let mouseX=null;
+    const JEWELS = ['💎','🔴','🟡','🟢','🔵','🟣','🌟','💜'];
+    let cards=[], flipped=[], matched=0, moves=0, canFlip=true, timerInt, seconds=0, gameStarted=false;
 
-    function startGame(){
-      overlay.style.display='none';
-      score=0;lives=3;speed=3;dropInt=1200;
-      items=[];catcher={x:canvas.width/2-CW/2,y:canvas.height-50};
-      lastDrop=0;running=true;
-      scoreEl.textContent=0;livesEl.textContent='❤️'.repeat(3);
-      cancelAnimationFrame(raf);loop(0);
+    function buildCrown() {
+      const cf = document.getElementById('crownFill');
+      cf.innerHTML = JEWELS.map(j=>`<span class="jewel" data-jewel="${j}">${j}</span>`).join('');
     }
 
-    function loop(ts){
-      if(!running)return;
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      // Draw starry bg
-      ctx.fillStyle='#0a0a1a'; ctx.fillRect(0,0,canvas.width,canvas.height);
-      // Twinkling stars bg
-      for(let i=0;i<30;i++){
-        const x=(i*137.5)%canvas.width, y=(i*73.1)%canvas.height;
-        const alpha=0.3+0.3*Math.sin(ts/800+i);
-        ctx.globalAlpha=alpha; ctx.fillStyle='#fff';
-        ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();
-      }
-      ctx.globalAlpha=1;
+    function lightJewel(emoji) {
+      const el = document.querySelector(`.jewel[data-jewel="${emoji}"]`);
+      if(el) el.classList.add('lit');
+    }
 
-      // Move catcher
-      if(keys.ArrowLeft||keys.a||keys.A) catcher.x-=7;
-      if(keys.ArrowRight||keys.d||keys.D) catcher.x+=7;
-      if(mouseX!==null){
-        const rect=canvas.getBoundingClientRect();
-        catcher.x+=(mouseX-rect.left-CW/2-catcher.x)*0.18;
-      }
-      catcher.x=Math.max(0,Math.min(canvas.width-CW,catcher.x));
-
-      // Drop items
-      if(ts-lastDrop>dropInt){
-        const isBomb=Math.random()<0.2;
-        items.push({x:Math.random()*(canvas.width-30),y:-30,bomb:isBomb,done:false});
-        lastDrop=ts;
-        dropInt=Math.max(450,dropInt-15);
-        speed=Math.min(10,speed+0.12);
-      }
-
-      // Update & draw items
-      items.forEach(it=>{
-        if(it.done)return;
-        it.y+=speed;
-        ctx.font='28px serif';
-        ctx.fillText(it.bomb?'💣':'⭐',it.x,it.y);
-        // Catch check
-        if(it.y+28>=catcher.y&&it.x+28>catcher.x&&it.x<catcher.x+CW){
-          it.done=true;
-          if(it.bomb){lives--;livesEl.textContent='❤️'.repeat(Math.max(0,lives));if(lives<=0){endGame();return;}}
-          else{score++;scoreEl.textContent=score;if(score>best){best=score;bestEl.textContent=best;}}
-        } else if(it.y>canvas.height){
-          it.done=true;
-          if(!it.bomb){lives--;livesEl.textContent='❤️'.repeat(Math.max(0,lives));if(lives<=0){endGame();return;}}
-        }
+    function startGame() {
+      document.getElementById('winMsg').style.display='none';
+      document.getElementById('grid').style.display='grid';
+      matched=0; moves=0; flipped=[]; canFlip=true; seconds=0; gameStarted=false;
+      clearInterval(timerInt);
+      document.getElementById('moves').textContent=0;
+      document.getElementById('pairs').textContent=0;
+      document.getElementById('timer').textContent='0s';
+      document.getElementById('msg').textContent='Flip two cards to find matching jewels! 👑';
+      buildCrown();
+      const deck = [...JEWELS,...JEWELS].sort(()=>Math.random()-0.5);
+      const grid=document.getElementById('grid');
+      grid.innerHTML='';
+      cards=[];
+      deck.forEach((emoji,i)=>{
+        const card=document.createElement('div');
+        card.className='card';
+        card.innerHTML=`<div class="card-face card-back">✦</div><div class="card-face card-front">${emoji}</div>`;
+        card.dataset.emoji=emoji;
+        card.dataset.idx=i;
+        card.addEventListener('click',()=>flipCard(card));
+        grid.appendChild(card);
+        cards.push(card);
       });
-      items=items.filter(it=>!it.done||it.y<=canvas.height);
-
-      // Draw catcher (crown)
-      ctx.fillStyle='#ffd700';
-      // Crown shape
-      const cx=catcher.x,cy=catcher.y;
-      ctx.beginPath();
-      ctx.moveTo(cx,cy+CH); ctx.lineTo(cx,cy+4);
-      ctx.lineTo(cx+CW*0.2,cy+CH/2); ctx.lineTo(cx+CW*0.35,cy);
-      ctx.lineTo(cx+CW*0.5,cy+CH/2); ctx.lineTo(cx+CW*0.65,cy);
-      ctx.lineTo(cx+CW*0.8,cy+CH/2); ctx.lineTo(cx+CW,cy+4);
-      ctx.lineTo(cx+CW,cy+CH); ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle='#b8860b'; ctx.lineWidth=2; ctx.stroke();
-
-      raf=requestAnimationFrame(loop);
     }
 
-    function endGame(){
-      running=false; cancelAnimationFrame(raf);
-      overlay.innerHTML=`<h2>${score>=15?'👑 Crown Fully Filled!':'⭐ Game Over!'}</h2><div class="final">⭐ ${score} Stars</div><p>${score>=20?'Amazing! Lady Liberty loves you!':score>=10?'Great job! Keep collecting!':"Don't give up — Lady Liberty needs more stars!"}</p><button onclick="startGame()">Play Again!</button><br><br><a href="../index.html" style="color:#ffd700;font-size:13px;">← All Games</a>`;
-      overlay.style.display='flex';
+    function flipCard(card) {
+      if(!canFlip || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+      if(!gameStarted) { gameStarted=true; timerInt=setInterval(()=>{ seconds++; document.getElementById('timer').textContent=seconds+'s'; },1000); }
+      card.classList.add('flipped');
+      flipped.push(card);
+      if(flipped.length===2) {
+        moves++;
+        document.getElementById('moves').textContent=moves;
+        canFlip=false;
+        checkMatch();
+      }
     }
 
-    document.addEventListener('keydown',e=>keys[e.key]=true);
-    document.addEventListener('keyup',e=>keys[e.key]=false);
-    canvas.addEventListener('mousemove',e=>{if(running)mouseX=e.clientX;});
-    canvas.addEventListener('touchmove',e=>{e.preventDefault();if(running)mouseX=e.touches[0].clientX;},{passive:false});
-    canvas.addEventListener('touchend',()=>mouseX=null);
+    function checkMatch() {
+      const [a,b]=flipped;
+      if(a.dataset.emoji===b.dataset.emoji) {
+        a.classList.add('matched'); b.classList.add('matched');
+        lightJewel(a.dataset.emoji);
+        matched++;
+        document.getElementById('pairs').textContent=matched;
+        document.getElementById('msg').textContent=matched<8?'✨ Match! Keep going!':'';
+        flipped=[]; canFlip=true;
+        if(matched===8) setTimeout(winGame,500);
+      } else {
+        document.getElementById('msg').textContent='Not quite — try again!';
+        setTimeout(()=>{
+          a.classList.remove('flipped'); b.classList.remove('flipped');
+          flipped=[]; canFlip=true;
+          document.getElementById('msg').textContent='Flip two cards to find matching jewels! 👑';
+        },900);
+      }
+    }
+
+    function winGame() {
+      clearInterval(timerInt);
+      const grid=document.getElementById('grid');
+      grid.style.display='none';
+      const rating = moves<=18?'🏆 Perfect!':moves<=24?'⭐ Great job!':'🌟 You did it!';
+      document.getElementById('winText').textContent=`You matched all 8 jewels in ${moves} moves and ${seconds} seconds! ${rating} Lady Liberty's crown is sparkling!`;
+      document.getElementById('winMsg').style.display='block';
+    }
+
+    startGame();
   </script>
 </body>
 </html>
