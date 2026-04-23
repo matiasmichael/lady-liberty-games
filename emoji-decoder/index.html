@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emoji Decoder 🤔 — Lady Liberty Games</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Georgia',serif; min-height:100vh; background:linear-gradient(160deg,#b8f0ff 0%,#d4f5e9 50%,#c2eedb 100%); display:flex; flex-direction:column; align-items:center; padding:30px 16px 80px; }
+    h1 { font-size:clamp(22px,5vw,40px); color:#0d5c3a; text-shadow:2px 2px 0 rgba(255,255,255,0.8); margin-bottom:6px; text-align:center; }
+    .sub { color:#1a7a4a; font-style:italic; font-size:15px; margin-bottom:28px; text-align:center; }
+    .back { display:inline-block; margin-bottom:20px; color:#0d5c3a; text-decoration:none; font-size:14px; font-weight:bold; }
+    .back:hover { text-decoration:underline; }
+    .game-area { background:rgba(255,255,255,0.92); border:2px solid #a0dfc0; border-radius:24px; padding:28px; max-width:560px; width:100%; box-shadow:0 6px 24px rgba(0,0,0,0.1); }
+    .emoji-display { font-size:clamp(40px,10vw,72px); text-align:center; margin:18px 0; letter-spacing:8px; }
+    .hint { text-align:center; color:#888; font-size:13px; margin-bottom:18px; }
+    .options { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
+    .opt { padding:13px; background:rgba(255,255,255,0.8); border:2px solid #a0dfc0; border-radius:14px; cursor:pointer; font-size:14px; font-family:'Georgia',serif; text-align:center; transition:all 0.2s; }
+    .opt:hover { background:#d4f5e9; border-color:#2ea043; }
+    .opt.correct { background:#d4f5e9; border-color:#2ea043; color:#0d5c3a; font-weight:bold; }
+    .opt.wrong { background:#ffe0e0; border-color:#e53935; color:#b71c1c; }
+    .feedback { text-align:center; font-size:18px; font-weight:bold; min-height:30px; margin-bottom:14px; }
+    .score { text-align:center; color:#0d5c3a; font-size:16px; margin-bottom:16px; }
+    .btn { display:block; width:100%; padding:14px; background:#2ea043; color:#fff; border:none; border-radius:14px; font-size:16px; font-family:'Georgia',serif; cursor:pointer; font-weight:bold; }
+    .btn:hover { background:#1d8a30; }
+    .progress { text-align:center; color:#888; font-size:13px; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← Back to Games</a>
+  <div style="font-size:64px;margin-bottom:10px;">🤔</div>
+  <h1>Emoji Decoder</h1>
+  <p class="sub">Guess the Lady Liberty theme from the emojis!</p>
+  <div class="game-area">
+    <div class="emoji-display" id="emojiDisplay">?</div>
+    <div class="hint" id="hintText"></div>
+    <div class="options" id="optionsGrid"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="score" id="scoreDisplay">Score: 0</div>
+    <button class="btn" onclick="nextRound()" id="nextBtn" style="display:none">Next →</button>
+    <div class="progress" id="progress"></div>
+  </div>
+  <script>
+    const puzzles = [
+      { emoji:"🗽🌊🚢", answer:"Statue of Liberty", options:["Statue of Liberty","Eiffel Tower","Big Ben","Colosseum"], hint:"NYC landmark..." },
+      { emoji:"🍕🗽❤️", answer:"NYC Pizza Love", options:["NYC Pizza Love","Italian Trip","Cheese Dream","Lunch Break"], hint:"New York + food..." },
+      { emoji:"🌅🏙️⭐", answer:"City Sunrise", options:["City Sunrise","Night Sky","Afternoon Nap","Beach Party"], hint:"Morning in the city..." },
+      { emoji:"🦅🇺🇸🔦", answer:"American Eagle Torch", options:["American Eagle Torch","Flag Day","Camping Trip","Bird Watching"], hint:"Patriotic symbols..." },
+      { emoji:"👑💚🗽", answer:"Lady Liberty's Crown", options:["Lady Liberty's Crown","Mermaid Queen","Green Fairy","Royal Tea"], hint:"The statue's famous accessory..." },
+      { emoji:"🌆🌃🌉", answer:"New York City", options:["New York City","Tokyo Nights","Paris Evening","London Bridge"], hint:"The greatest city..." },
+      { emoji:"🤝🌍❤️", answer:"Welcome Everyone", options:["Welcome Everyone","Travel Agency","World Cup","Pen Pals"], hint:"Liberty's message..." },
+      { emoji:"🎆🎇🗽", answer:"4th of July", options:["4th of July","New Year's Eve","Birthday Party","Disco Night"], hint:"Fireworks + the statue..." },
+      { emoji:"🐦🏙️😤", answer:"Seagull Dodge", options:["Seagull Dodge","Bird Watching","Zoo Trip","Nature Walk"], hint:"Our famous game..."},
+      { emoji:"🧩🗽✅", answer:"Liberty Puzzle", options:["Liberty Puzzle","Jigsaw Party","Brain Teaser","Art Project"], hint:"Put her back together..."},
+    ];
+    let idx=0, score=0, answered=false;
+    function loadPuzzle() {
+      if(idx>=puzzles.length){ document.getElementById('emojiDisplay').textContent='🎉'; document.getElementById('hintText').textContent='You finished all puzzles! Score: '+score+'/'+puzzles.length; document.getElementById('optionsGrid').innerHTML=''; document.getElementById('nextBtn').style.display='none'; return; }
+      const p=puzzles[idx];
+      document.getElementById('emojiDisplay').textContent=p.emoji;
+      document.getElementById('hintText').textContent='Hint: '+p.hint;
+      document.getElementById('feedback').textContent='';
+      document.getElementById('progress').textContent=(idx+1)+' / '+puzzles.length;
+      document.getElementById('nextBtn').style.display='none';
+      answered=false;
+      const grid=document.getElementById('optionsGrid');
+      const opts=[...p.options].sort(()=>Math.random()-0.5);
+      grid.innerHTML=opts.map(o=>`<button class="opt" onclick="guess('${o.replace(/'/g,"\'")}','${p.answer.replace(/'/g,"\'")}',this)">${o}</button>`).join('');
+    }
+    function guess(chosen, correct, btn) {
+      if(answered) return;
+      answered=true;
+      document.querySelectorAll('.opt').forEach(b=>{ if(b.textContent===correct) b.classList.add('correct'); });
+      if(chosen===correct){ score++; document.getElementById('feedback').textContent='🎉 Correct!'; btn.classList.add('correct'); }
+      else { document.getElementById('feedback').textContent='❌ It was: '+correct; btn.classList.add('wrong'); }
+      document.getElementById('scoreDisplay').textContent='Score: '+score;
+      document.getElementById('nextBtn').style.display='block';
+    }
+    function nextRound(){ idx++; loadPuzzle(); }
+    loadPuzzle();
+  </script>
+</body>
+</html>
