@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crown Collector ⭐</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0a0a1a; font-family:'Georgia',serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; overflow:hidden; }
+    .back { position:fixed; top:12px; left:12px; color:#ffd700; text-decoration:none; font-size:14px; }
+    h1 { font-size:clamp(20px,4vw,32px); color:#ffd700; margin-bottom:4px; text-align:center; }
+    .sub { color:#888; font-size:13px; margin-bottom:12px; font-style:italic; }
+    #score-bar { display:flex; gap:30px; margin-bottom:12px; font-size:16px; color:#fff; }
+    #score-bar span { color:#ffd700; font-weight:bold; font-size:20px; }
+    #canvas-wrap { position:relative; border:2px solid #ffd700; border-radius:12px; overflow:hidden; box-shadow:0 0 40px rgba(255,215,0,0.2); }
+    canvas { display:block; background:#0a0a1a; }
+    #overlay { position:absolute; inset:0; background:rgba(10,10,26,0.9); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px; }
+    #overlay h2 { font-size:26px; color:#ffd700; margin-bottom:10px; }
+    #overlay p { color:#aaa; margin-bottom:20px; font-size:14px; line-height:1.6; }
+    .final { font-size:30px; color:#ffd700; font-weight:bold; margin-bottom:8px; }
+    button { background:#ffd700; color:#0a0a1a; border:none; padding:12px 32px; font-size:17px; border-radius:8px; cursor:pointer; font-family:inherit; font-weight:bold; }
+    button:hover { background:#ffe44d; }
+    .hint { margin-top:12px; font-size:11px; color:#555; }
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← All Games</a>
+  <h1>⭐ Crown Collector</h1>
+  <p class="sub">Catch falling stars to fill Lady Liberty's crown!</p>
+  <div id="score-bar">Stars: <span id="score">0</span> &nbsp;|&nbsp; Best: <span id="best">0</span> &nbsp;|&nbsp; Lives: <span id="lives">❤️❤️❤️</span></div>
+  <div id="canvas-wrap">
+    <canvas id="c" width="400" height="500"></canvas>
+    <div id="overlay">
+      <h2>⭐ Crown Collector</h2>
+      <p>Stars are falling from the sky!<br>Move Lady Liberty's crown to catch them all!<br><br>← → Arrow keys | Mouse | Touch</p>
+      <button onclick="startGame()">Catch Stars!</button>
+      <div class="hint">Watch out — bombs also fall!</div>
+    </div>
+  </div>
+
+  <script>
+    const canvas=document.getElementById('c'), ctx=canvas.getContext('2d');
+    const overlay=document.getElementById('overlay');
+    const scoreEl=document.getElementById('score'), bestEl=document.getElementById('best'), livesEl=document.getElementById('lives');
+    let score,lives,best=0,items,catcher,speed,dropInt,lastDrop,raf,running;
+    const CW=80,CH=20;
+    const keys={};
+    let mouseX=null;
+
+    function startGame(){
+      overlay.style.display='none';
+      score=0;lives=3;speed=3;dropInt=1200;
+      items=[];catcher={x:canvas.width/2-CW/2,y:canvas.height-50};
+      lastDrop=0;running=true;
+      scoreEl.textContent=0;livesEl.textContent='❤️'.repeat(3);
+      cancelAnimationFrame(raf);loop(0);
+    }
+
+    function loop(ts){
+      if(!running)return;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // Draw starry bg
+      ctx.fillStyle='#0a0a1a'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      // Twinkling stars bg
+      for(let i=0;i<30;i++){
+        const x=(i*137.5)%canvas.width, y=(i*73.1)%canvas.height;
+        const alpha=0.3+0.3*Math.sin(ts/800+i);
+        ctx.globalAlpha=alpha; ctx.fillStyle='#fff';
+        ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();
+      }
+      ctx.globalAlpha=1;
+
+      // Move catcher
+      if(keys.ArrowLeft||keys.a||keys.A) catcher.x-=7;
+      if(keys.ArrowRight||keys.d||keys.D) catcher.x+=7;
+      if(mouseX!==null){
+        const rect=canvas.getBoundingClientRect();
+        catcher.x+=(mouseX-rect.left-CW/2-catcher.x)*0.18;
+      }
+      catcher.x=Math.max(0,Math.min(canvas.width-CW,catcher.x));
+
+      // Drop items
+      if(ts-lastDrop>dropInt){
+        const isBomb=Math.random()<0.2;
+        items.push({x:Math.random()*(canvas.width-30),y:-30,bomb:isBomb,done:false});
+        lastDrop=ts;
+        dropInt=Math.max(450,dropInt-15);
+        speed=Math.min(10,speed+0.12);
+      }
+
+      // Update & draw items
+      items.forEach(it=>{
+        if(it.done)return;
+        it.y+=speed;
+        ctx.font='28px serif';
+        ctx.fillText(it.bomb?'💣':'⭐',it.x,it.y);
+        // Catch check
+        if(it.y+28>=catcher.y&&it.x+28>catcher.x&&it.x<catcher.x+CW){
+          it.done=true;
+          if(it.bomb){lives--;livesEl.textContent='❤️'.repeat(Math.max(0,lives));if(lives<=0){endGame();return;}}
+          else{score++;scoreEl.textContent=score;if(score>best){best=score;bestEl.textContent=best;}}
+        } else if(it.y>canvas.height){
+          it.done=true;
+          if(!it.bomb){lives--;livesEl.textContent='❤️'.repeat(Math.max(0,lives));if(lives<=0){endGame();return;}}
+        }
+      });
+      items=items.filter(it=>!it.done||it.y<=canvas.height);
+
+      // Draw catcher (crown)
+      ctx.fillStyle='#ffd700';
+      // Crown shape
+      const cx=catcher.x,cy=catcher.y;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy+CH); ctx.lineTo(cx,cy+4);
+      ctx.lineTo(cx+CW*0.2,cy+CH/2); ctx.lineTo(cx+CW*0.35,cy);
+      ctx.lineTo(cx+CW*0.5,cy+CH/2); ctx.lineTo(cx+CW*0.65,cy);
+      ctx.lineTo(cx+CW*0.8,cy+CH/2); ctx.lineTo(cx+CW,cy+4);
+      ctx.lineTo(cx+CW,cy+CH); ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle='#b8860b'; ctx.lineWidth=2; ctx.stroke();
+
+      raf=requestAnimationFrame(loop);
+    }
+
+    function endGame(){
+      running=false; cancelAnimationFrame(raf);
+      overlay.innerHTML=`<h2>${score>=15?'👑 Crown Fully Filled!':'⭐ Game Over!'}</h2><div class="final">⭐ ${score} Stars</div><p>${score>=20?'Amazing! Lady Liberty loves you!':score>=10?'Great job! Keep collecting!':"Don't give up — Lady Liberty needs more stars!"}</p><button onclick="startGame()">Play Again!</button><br><br><a href="../index.html" style="color:#ffd700;font-size:13px;">← All Games</a>`;
+      overlay.style.display='flex';
+    }
+
+    document.addEventListener('keydown',e=>keys[e.key]=true);
+    document.addEventListener('keyup',e=>keys[e.key]=false);
+    canvas.addEventListener('mousemove',e=>{if(running)mouseX=e.clientX;});
+    canvas.addEventListener('touchmove',e=>{e.preventDefault();if(running)mouseX=e.touches[0].clientX;},{passive:false});
+    canvas.addEventListener('touchend',()=>mouseX=null);
+  </script>
+</body>
+</html>

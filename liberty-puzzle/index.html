@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Liberty Puzzle 🧩</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#1a1a2e; font-family:'Georgia',serif; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px; }
+    .back { position:fixed; top:12px; left:12px; color:#a8d5a2; text-decoration:none; font-size:14px; }
+    h1 { font-size:clamp(20px,4vw,32px); color:#a8d5a2; margin:10px 0 4px; text-align:center; }
+    .sub { color:#888; font-size:13px; margin-bottom:16px; font-style:italic; text-align:center; }
+    #status { font-size:15px; color:#ffd700; margin-bottom:12px; text-align:center; min-height:22px; }
+    .game-area { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; align-items:flex-start; }
+    .zone { text-align:center; }
+    .zone h3 { color:#8b949e; font-size:12px; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+    #puzzle-board { display:grid; grid-template-columns:repeat(3,90px); grid-template-rows:repeat(3,90px); gap:4px; background:#161b22; border:2px solid #30363d; border-radius:8px; padding:8px; min-height:286px; }
+    .board-slot { width:90px; height:90px; border:2px dashed #30363d; border-radius:8px; display:flex; align-items:center; justify-content:center; position:relative; }
+    .board-slot.correct { border-color:#2ea043; background:rgba(46,160,67,0.1); }
+    .board-slot.drag-over { border-color:#ffd700; background:rgba(255,215,0,0.1); }
+    #pieces-area { display:flex; flex-wrap:wrap; gap:8px; max-width:300px; background:#161b22; border:2px solid #30363d; border-radius:8px; padding:10px; min-height:100px; align-content:flex-start; }
+    .piece { width:90px; height:90px; border-radius:8px; cursor:grab; display:flex; align-items:center; justify-content:center; font-size:44px; border:2px solid #444; background:#21262d; transition:transform 0.15s,box-shadow 0.15s; user-select:none; }
+    .piece:hover { transform:scale(1.08); box-shadow:0 4px 16px rgba(255,255,255,0.1); }
+    .piece:active { cursor:grabbing; }
+    .piece.dragging { opacity:0.5; }
+    button { margin-top:16px; background:#2ea043; color:#fff; border:none; padding:10px 24px; font-size:15px; border-radius:8px; cursor:pointer; font-family:inherit; }
+    button:hover { background:#3fb950; }
+    #win-msg { display:none; text-align:center; margin-top:16px; }
+    #win-msg h2 { color:#ffd700; font-size:28px; margin-bottom:8px; }
+    #win-msg p { color:#a8d5a2; margin-bottom:12px; }
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← All Games</a>
+  <h1>🧩 Liberty Puzzle</h1>
+  <p class="sub">Drag the pieces into the correct order to rebuild Lady Liberty!</p>
+  <div id="status">Drag pieces from the right into the grid!</div>
+
+  <div class="game-area">
+    <div class="zone">
+      <h3>Puzzle Board</h3>
+      <div id="puzzle-board"></div>
+    </div>
+    <div class="zone">
+      <h3>Pieces</h3>
+      <div id="pieces-area"></div>
+    </div>
+  </div>
+
+  <button onclick="shuffle()">🔀 Shuffle & Restart</button>
+
+  <div id="win-msg">
+    <h2>🎉 You Did It!</h2>
+    <p>Lady Liberty is back together! You're amazing, Alma!</p>
+    <button onclick="shuffle()">Play Again!</button>
+    <br><br><a href="../index.html" style="color:#a8d5a2;font-size:13px;">← All Games</a>
+  </div>
+
+  <script>
+    // 9 pieces of Lady Liberty, each with emoji + label
+    const PIECES = [
+      {id:0, emoji:'👑', label:'Crown', desc:'Top: Crown'},
+      {id:1, emoji:'😊', label:'Face', desc:'Head: Face'},
+      {id:2, emoji:'🔥', label:'Torch', desc:'Right: Torch'},
+      {id:3, emoji:'💪', label:'Arm', desc:'Left: Arm up'},
+      {id:4, emoji:'🗽', label:'Body Top', desc:'Middle: Body'},
+      {id:5, emoji:'💪', label:'Arm', desc:'Right: Arm'},
+      {id:6, emoji:'📜', label:'Tablet', desc:'Lower: Tablet'},
+      {id:7, emoji:'👗', label:'Robe', desc:'Lower: Robe'},
+      {id:8, emoji:'🦶', label:'Base', desc:'Bottom: Base'},
+    ];
+
+    const board = document.getElementById('puzzle-board');
+    const piecesArea = document.getElementById('pieces-area');
+    const statusEl = document.getElementById('status');
+    const winMsg = document.getElementById('win-msg');
+    // slots[i] = piece id placed there, or null
+    let slots = Array(9).fill(null);
+    let dragId = null;
+    let dragFrom = null; // 'pieces' or slot index
+
+    function renderBoard(){
+      board.innerHTML='';
+      for(let i=0;i<9;i++){
+        const slot=document.createElement('div');
+        slot.className='board-slot'+(slots[i]===i?' correct':'');
+        slot.dataset.slot=i;
+        if(slots[i]!==null){
+          const p=PIECES[slots[i]];
+          const pe=makePieceEl(p,true);
+          slot.appendChild(pe);
+        } else {
+          slot.innerHTML=`<span style="font-size:11px;color:#484f58">${i+1}</span>`;
+        }
+        // Drag events
+        slot.addEventListener('dragover',e=>{e.preventDefault();slot.classList.add('drag-over');});
+        slot.addEventListener('dragleave',()=>slot.classList.remove('drag-over'));
+        slot.addEventListener('drop',e=>{e.preventDefault();slot.classList.remove('drag-over');dropOnSlot(i);});
+        board.appendChild(slot);
+      }
+      checkWin();
+    }
+
+    function renderPieces(ids){
+      piecesArea.innerHTML='';
+      ids.forEach(id=>{
+        const pe=makePieceEl(PIECES[id],false);
+        piecesArea.appendChild(pe);
+      });
+    }
+
+    function makePieceEl(p,onBoard){
+      const el=document.createElement('div');
+      el.className='piece';
+      el.draggable=true;
+      el.dataset.pid=p.id;
+      el.dataset.from=onBoard?'board':'pieces';
+      el.innerHTML=`<div style="text-align:center"><div style="font-size:40px">${p.emoji}</div><div style="font-size:9px;color:#8b949e;margin-top:2px">${p.label}</div></div>`;
+      el.addEventListener('dragstart',e=>{
+        dragId=p.id;
+        dragFrom=onBoard?parseInt(el.parentElement.dataset.slot):'pieces';
+        setTimeout(()=>el.classList.add('dragging'),0);
+      });
+      el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+      // Touch support
+      let touchTimeout;
+      el.addEventListener('touchstart',e=>{
+        dragId=p.id;
+        dragFrom=onBoard?parseInt(el.parentElement.dataset.slot):'pieces';
+      },{passive:true});
+      el.addEventListener('touchend',e=>{
+        const touch=e.changedTouches[0];
+        const target=document.elementFromPoint(touch.clientX,touch.clientY);
+        const slot=target?.closest('.board-slot');
+        if(slot) dropOnSlot(parseInt(slot.dataset.slot));
+        else if(target?.closest('#pieces-area')&&dragFrom!=='pieces') returnPiece();
+        dragId=null; dragFrom=null;
+      });
+      return el;
+    }
+
+    let remainingPieces=[];
+
+    function dropOnSlot(slotIdx){
+      if(dragId===null)return;
+      const existing=slots[slotIdx];
+      if(dragFrom==='pieces'){
+        // From pieces area to board
+        if(existing!==null){
+          remainingPieces.push(existing);
+        }
+        remainingPieces=remainingPieces.filter(x=>x!==dragId);
+        slots[slotIdx]=dragId;
+      } else {
+        // From board slot to another board slot — swap
+        slots[dragFrom]=existing;
+        slots[slotIdx]=dragId;
+      }
+      dragId=null; dragFrom=null;
+      renderBoard(); renderPieces(remainingPieces);
+      updateStatus();
+    }
+
+    function returnPiece(){
+      if(dragFrom!=='pieces'&&dragFrom!==null){
+        remainingPieces.push(slots[dragFrom]);
+        slots[dragFrom]=null;
+        dragId=null; dragFrom=null;
+        renderBoard(); renderPieces(remainingPieces);
+        updateStatus();
+      }
+    }
+
+    piecesArea.addEventListener('dragover',e=>e.preventDefault());
+    piecesArea.addEventListener('drop',e=>{e.preventDefault();returnPiece();});
+
+    function updateStatus(){
+      const correct=slots.filter((v,i)=>v===i).length;
+      const placed=slots.filter(v=>v!==null).length;
+      statusEl.textContent=`${placed} placed · ${correct} in the right spot!`;
+    }
+
+    function checkWin(){
+      if(slots.every((v,i)=>v===i)){
+        winMsg.style.display='block';
+        statusEl.textContent='🎉 Perfect! Lady Liberty is complete!';
+      } else {
+        winMsg.style.display='none';
+      }
+    }
+
+    function shuffle(){
+      slots=Array(9).fill(null);
+      remainingPieces=[...Array(9).keys()];
+      // Shuffle
+      for(let i=remainingPieces.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [remainingPieces[i],remainingPieces[j]]=[remainingPieces[j],remainingPieces[i]];
+      }
+      winMsg.style.display='none';
+      statusEl.textContent='Drag pieces from the right into the grid!';
+      renderBoard(); renderPieces(remainingPieces);
+    }
+
+    shuffle();
+  </script>
+</body>
+</html>

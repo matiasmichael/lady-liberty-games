@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Color Lady Liberty! 🎨</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#f0f8ff; font-family:'Georgia',serif; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px; }
+    .back { position:fixed; top:12px; left:12px; color:#2ea043; text-decoration:none; font-size:14px; background:#fff; padding:6px 12px; border-radius:20px; border:1px solid #2ea043; }
+    h1 { font-size:clamp(22px,4vw,36px); color:#5b2d8e; margin:10px 0 4px; text-align:center; }
+    .sub { color:#888; font-size:13px; margin-bottom:16px; }
+    .colors { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom:16px; max-width:540px; }
+    .swatch { width:42px; height:42px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:transform 0.15s,border-color 0.15s; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+    .swatch.active { border-color:#333; transform:scale(1.2); }
+    .canvas-wrap { position:relative; }
+    canvas { border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.15); cursor:crosshair; touch-action:none; }
+    .actions { display:flex; gap:12px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+    button { padding:10px 22px; border:none; border-radius:20px; font-size:14px; cursor:pointer; font-family:inherit; font-weight:bold; }
+    .btn-clear { background:#ff6b6b; color:#fff; }
+    .btn-save { background:#2ea043; color:#fff; }
+    .btn-clear:hover { background:#e05555; }
+    .btn-save:hover { background:#238636; }
+    .size-wrap { display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:13px; color:#555; }
+    input[type=range] { width:100px; }
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← All Games</a>
+  <h1>🎨 Color Lady Liberty!</h1>
+  <p class="sub">Pick a color and paint her any way you want!</p>
+  <div class="colors" id="palette"></div>
+  <div class="size-wrap">Brush size: <input type="range" id="brushSize" min="5" max="40" value="16"> <span id="sizeLabel">16</span></div>
+  <div class="canvas-wrap">
+    <canvas id="c" width="360" height="460"></canvas>
+  </div>
+  <div class="actions">
+    <button class="btn-clear" onclick="clearCanvas()">🗑️ Start Over</button>
+    <button class="btn-save" onclick="saveCanvas()">💾 Save My Art!</button>
+  </div>
+
+  <script>
+    const colors = ['#5b9e6e','#2ea043','#a8d5a2','#7ee787','#ffd700','#ff6b6b','#ff9ff3','#48dbfb','#ff9f43','#c9a84c','#5f27cd','#ffffff','#222222','#54a0ff','#ee5a24','#009432'];
+    let currentColor = colors[0];
+    const palette = document.getElementById('palette');
+    colors.forEach(c => {
+      const s = document.createElement('div');
+      s.className = 'swatch' + (c===currentColor?' active':'');
+      s.style.background = c;
+      s.onclick = () => { document.querySelectorAll('.swatch').forEach(x=>x.classList.remove('active')); s.classList.add('active'); currentColor=c; };
+      palette.appendChild(s);
+    });
+
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const brushEl = document.getElementById('brushSize');
+    const sizeLabel = document.getElementById('sizeLabel');
+    brushEl.oninput = () => sizeLabel.textContent = brushEl.value;
+
+    // Draw Lady Liberty outline
+    function drawLiberty() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle='#e8f5e9';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      ctx.strokeStyle='#333';
+      ctx.lineWidth=3;
+      ctx.lineCap='round';
+      ctx.lineJoin='round';
+
+      // Body (robe)
+      ctx.fillStyle='#b2dfdb';
+      ctx.beginPath();
+      ctx.ellipse(180,360,90,130,0,0,Math.PI*2);
+      ctx.fill(); ctx.stroke();
+
+      // Head
+      ctx.fillStyle='#a8d5a2';
+      ctx.beginPath();
+      ctx.ellipse(180,170,45,52,0,0,Math.PI*2);
+      ctx.fill(); ctx.stroke();
+
+      // Crown
+      ctx.fillStyle='#ffd700';
+      ctx.beginPath();
+      ctx.moveTo(148,138); ctx.lineTo(155,105); ctx.lineTo(165,125);
+      ctx.lineTo(173,95); ctx.lineTo(180,118);
+      ctx.lineTo(187,95); ctx.lineTo(195,125);
+      ctx.lineTo(205,105); ctx.lineTo(212,138);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      // Arm holding torch
+      ctx.fillStyle='#a8d5a2';
+      ctx.beginPath();
+      ctx.moveTo(220,240); ctx.lineTo(250,200); ctx.lineTo(265,210);
+      ctx.lineTo(240,260); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+
+      // Torch handle
+      ctx.fillStyle='#8B4513';
+      ctx.fillRect(257,165,10,45);
+      ctx.strokeRect(257,165,10,45);
+
+      // Torch flame
+      ctx.fillStyle='#ff6b00';
+      ctx.beginPath();
+      ctx.ellipse(262,155,14,22,0,0,Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle='#ffd700';
+      ctx.beginPath();
+      ctx.ellipse(262,160,8,14,0,0,Math.PI*2);
+      ctx.fill();
+
+      // Face
+      ctx.fillStyle='#333';
+      ctx.beginPath(); ctx.arc(168,165,5,0,Math.PI*2); ctx.fill(); // eye
+      ctx.beginPath(); ctx.arc(192,165,5,0,Math.PI*2); ctx.fill(); // eye
+      ctx.beginPath(); ctx.arc(180,182,12,0,Math.PI); ctx.stroke(); // smile
+
+      // Tablet
+      ctx.fillStyle='#c8e6c9';
+      ctx.beginPath();
+      ctx.roundRect(125,290,55,70,6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#333'; ctx.font='11px Georgia';
+      ctx.fillText('JULY', 132, 315);
+      ctx.fillText('IV', 140, 335);
+      ctx.fillText('MDCCLXXVI', 126, 353);
+    }
+
+    drawLiberty();
+
+    // Save initial as background
+    const bg = canvas.toDataURL();
+    const bgImg = new Image(); bgImg.src = bg;
+
+    // Painting
+    let drawing = false;
+    function paint(x,y) {
+      const r=parseInt(brushEl.value);
+      ctx.globalCompositeOperation='source-over';
+      ctx.fillStyle=currentColor;
+      ctx.beginPath(); ctx.arc(x,y,r/2,0,Math.PI*2); ctx.fill();
+    }
+    function getPos(e) {
+      const rect=canvas.getBoundingClientRect();
+      const scaleX=canvas.width/rect.width, scaleY=canvas.height/rect.height;
+      if(e.touches) return {x:(e.touches[0].clientX-rect.left)*scaleX, y:(e.touches[0].clientY-rect.top)*scaleY};
+      return {x:(e.clientX-rect.left)*scaleX, y:(e.clientY-rect.top)*scaleY};
+    }
+    canvas.onmousedown = e => { drawing=true; const p=getPos(e); paint(p.x,p.y); };
+    canvas.onmousemove = e => { if(drawing) { const p=getPos(e); paint(p.x,p.y); } };
+    canvas.onmouseup = canvas.onmouseleave = () => drawing=false;
+    canvas.ontouchstart = e => { e.preventDefault(); drawing=true; const p=getPos(e); paint(p.x,p.y); };
+    canvas.ontouchmove = e => { e.preventDefault(); if(drawing){const p=getPos(e);paint(p.x,p.y);} };
+    canvas.ontouchend = () => drawing=false;
+
+    function clearCanvas() { drawLiberty(); }
+    function saveCanvas() {
+      const a=document.createElement('a');
+      a.download='my-lady-liberty.png'; a.href=canvas.toDataURL();
+      a.click();
+    }
+  </script>
+</body>
+</html>

@@ -6,95 +6,22 @@
   <title>Lady Liberty Games 🗽</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #0d1117;
-      color: #e6edf3;
-      font-family: 'Georgia', serif;
-      min-height: 100vh;
-    }
-    header {
-      background: linear-gradient(135deg, #1a3a2a 0%, #0d2818 100%);
-      border-bottom: 2px solid #2ea043;
-      padding: 40px 20px;
-      text-align: center;
-    }
+    body { background: #0d1117; color: #e6edf3; font-family: 'Georgia', serif; min-height: 100vh; }
+    header { background: linear-gradient(135deg, #1a3a2a 0%, #0d2818 100%); border-bottom: 2px solid #2ea043; padding: 40px 20px; text-align: center; }
     .statue { font-size: 64px; margin-bottom: 12px; }
-    h1 {
-      font-size: clamp(28px, 5vw, 48px);
-      color: #a8d5a2;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
-    }
-    .tagline {
-      color: #7ee787;
-      font-style: italic;
-      font-size: clamp(14px, 2vw, 18px);
-      opacity: 0.8;
-    }
-    .games-grid {
-      max-width: 1100px;
-      margin: 60px auto;
-      padding: 0 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-    }
-    .game-card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 16px;
-      overflow: hidden;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-    .game-card:hover {
-      transform: translateY(-6px);
-      border-color: #2ea043;
-      box-shadow: 0 12px 40px rgba(46, 160, 67, 0.2);
-    }
-    .game-thumb {
-      background: linear-gradient(135deg, #1a3a2a, #0d2818);
-      height: 160px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 72px;
-    }
-    .game-info {
-      padding: 20px;
-    }
-    .game-title {
-      font-size: 20px;
-      color: #a8d5a2;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
-    .game-desc {
-      font-size: 14px;
-      color: #8b949e;
-      line-height: 1.5;
-    }
-    .badge {
-      display: inline-block;
-      background: #2ea043;
-      color: #0d1117;
-      font-size: 10px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 20px;
-      margin-top: 12px;
-    }
-    footer {
-      text-align: center;
-      padding: 40px;
-      color: #484f58;
-      font-size: 13px;
-      border-top: 1px solid #21262d;
-    }
+    h1 { font-size: clamp(28px, 5vw, 48px); color: #a8d5a2; letter-spacing: 2px; margin-bottom: 8px; }
+    .tagline { color: #7ee787; font-style: italic; font-size: clamp(14px, 2vw, 18px); opacity: 0.8; }
+    .dedication { margin-top: 10px; color: #c9a84c; font-size: 14px; }
+    .games-grid { max-width: 1100px; margin: 60px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+    .game-card { background: #161b22; border: 1px solid #30363d; border-radius: 16px; overflow: hidden; transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s; text-decoration: none; color: inherit; display: block; }
+    .game-card:hover { transform: translateY(-6px); border-color: #2ea043; box-shadow: 0 12px 40px rgba(46, 160, 67, 0.2); }
+    .game-thumb { height: 140px; display: flex; align-items: center; justify-content: center; font-size: 64px; }
+    .game-info { padding: 18px; }
+    .game-title { font-size: 18px; color: #a8d5a2; margin-bottom: 6px; font-weight: bold; }
+    .game-desc { font-size: 13px; color: #8b949e; line-height: 1.5; }
+    .badge { display: inline-block; background: #2ea043; color: #0d1117; font-size: 10px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; margin-top: 10px; }
+    .new-badge { background: #c9a84c; }
+    footer { text-align: center; padding: 40px; color: #484f58; font-size: 13px; border-top: 1px solid #21262d; }
   </style>
 </head>
 <body>
@@ -102,39 +29,50 @@
     <div class="statue">🗽</div>
     <h1>Lady Liberty Games</h1>
     <p class="tagline">"Give me your tired, your poor, your high scores."</p>
+    <p class="dedication">✨ Built with love for Alma ✨</p>
   </header>
-
   <div class="games-grid">
     <a class="game-card" href="torch-catcher/index.html">
-      <div class="game-thumb">🔦</div>
+      <div class="game-thumb" style="background:linear-gradient(135deg,#1a2a1a,#0d1a0d)">🔥</div>
       <div class="game-info">
         <div class="game-title">Torch Catcher</div>
-        <div class="game-desc">Lady Liberty's torch keeps slipping! Catch the falling flames before they hit the ground. How long can you keep the fire of freedom burning?</div>
+        <div class="game-desc">Catch Lady Liberty's falling torches before they hit the ground!</div>
         <span class="badge">Play Now</span>
       </div>
     </a>
-
-    <div class="game-card" style="opacity:0.5; cursor: default;">
-      <div class="game-thumb">🌊</div>
+    <a class="game-card" href="color-liberty/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#2a1a3a,#1a0d2a)">🎨</div>
       <div class="game-info">
-        <div class="game-title">Harbor Runner</div>
-        <div class="game-desc">Navigate Lady Liberty's boat through New York Harbor, dodging tourist ships and seagulls.</div>
-        <span class="badge" style="background:#484f58;">Coming Soon</span>
+        <div class="game-title">Color Lady Liberty!</div>
+        <div class="game-desc">Pick your favorite colors and paint Lady Liberty however you like!</div>
+        <span class="badge new-badge">⭐ New!</span>
       </div>
-    </div>
-
-    <div class="game-card" style="opacity:0.5; cursor: default;">
-      <div class="game-thumb">📜</div>
+    </a>
+    <a class="game-card" href="crown-collector/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#3a2a0a,#2a1a00)">⭐</div>
       <div class="game-info">
-        <div class="game-title">Declaration Dash</div>
-        <div class="game-desc">Type the Declaration of Independence faster than the British army can stop you. Typing game chaos.</div>
-        <span class="badge" style="background:#484f58;">Coming Soon</span>
+        <div class="game-title">Crown Collector</div>
+        <div class="game-desc">Catch falling stars to fill Lady Liberty's crown. How sparkly can you make it?</div>
+        <span class="badge new-badge">⭐ New!</span>
       </div>
-    </div>
+    </a>
+    <a class="game-card" href="seagull-dodge/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#0a2a3a,#001a2a)">🐦</div>
+      <div class="game-info">
+        <div class="game-title">Seagull Dodge</div>
+        <div class="game-desc">Help Lady Liberty dodge the pesky New York seagulls flying at her!</div>
+        <span class="badge new-badge">⭐ New!</span>
+      </div>
+    </a>
+    <a class="game-card" href="liberty-puzzle/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#1a1a3a,#0d0d2a)">🧩</div>
+      <div class="game-info">
+        <div class="game-title">Liberty Puzzle</div>
+        <div class="game-desc">Drag the pieces and put Lady Liberty back together in the right order!</div>
+        <span class="badge new-badge">⭐ New!</span>
+      </div>
+    </a>
   </div>
-
-  <footer>
-    🗽 Lady Liberty Games &mdash; Built with freedom (and JavaScript)
-  </footer>
+  <footer>🗽 Lady Liberty Games &mdash; Made with ❤️ for Alma</footer>
 </body>
 </html>

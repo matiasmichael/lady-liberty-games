@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seagull Dodge 🐦</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#87ceeb; font-family:'Georgia',serif; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; overflow:hidden; }
+    .back { position:fixed; top:12px; left:12px; color:#1a5276; text-decoration:none; font-size:14px; background:rgba(255,255,255,0.8); padding:4px 10px; border-radius:20px; }
+    h1 { font-size:clamp(20px,4vw,32px); color:#1a5276; margin-bottom:4px; text-align:center; }
+    .sub { color:#555; font-size:13px; margin-bottom:12px; font-style:italic; }
+    #score-bar { display:flex; gap:30px; margin-bottom:12px; font-size:16px; color:#1a5276; }
+    #score-bar span { font-weight:bold; font-size:20px; }
+    #canvas-wrap { position:relative; border:3px solid #1a5276; border-radius:12px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.2); }
+    canvas { display:block; }
+    #overlay { position:absolute; inset:0; background:rgba(135,206,235,0.93); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px; }
+    #overlay h2 { font-size:26px; color:#1a5276; margin-bottom:10px; }
+    #overlay p { color:#333; margin-bottom:20px; font-size:14px; line-height:1.6; }
+    .final { font-size:30px; color:#1a5276; font-weight:bold; margin-bottom:8px; }
+    button { background:#1a5276; color:#fff; border:none; padding:12px 32px; font-size:17px; border-radius:8px; cursor:pointer; font-family:inherit; font-weight:bold; }
+    button:hover { background:#2471a3; }
+    .hint { margin-top:12px; font-size:11px; color:#666; }
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← All Games</a>
+  <h1>🐦 Seagull Dodge</h1>
+  <p class="sub">Help Lady Liberty dodge the New York seagulls!</p>
+  <div id="score-bar">Score: <span id="score">0</span> &nbsp;|&nbsp; Best: <span id="best">0</span></div>
+  <div id="canvas-wrap">
+    <canvas id="c" width="420" height="500"></canvas>
+    <div id="overlay">
+      <h2>🐦 Seagull Dodge</h2>
+      <p>Seagulls are flying straight at Lady Liberty!<br>Move her left and right to dodge them all!<br><br>← → Arrow keys | Mouse | Touch</p>
+      <button onclick="startGame()">Dodge!</button>
+      <div class="hint">The longer you survive, the more seagulls attack!</div>
+    </div>
+  </div>
+
+  <script>
+    const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+    const overlay=document.getElementById('overlay');
+    const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best');
+    let liberty,gulls,score,best=0,speed,spawnInt,lastSpawn,raf,running,startTime;
+    const LW=50,LH=70;
+    const keys={};
+    let mouseX=null;
+
+    function startGame(){
+      overlay.style.display='none';
+      liberty={x:canvas.width/2-LW/2,y:canvas.height-90};
+      gulls=[];score=0;speed=3;spawnInt=1500;
+      lastSpawn=0;running=true;startTime=performance.now();
+      scoreEl.textContent=0;
+      cancelAnimationFrame(raf);loop(0);
+    }
+
+    function drawLiberty(x,y){
+      // Simple Lady Liberty emoji-style drawing
+      ctx.font='48px serif'; ctx.textAlign='center';
+      ctx.fillText('🗽',x+LW/2,y+LH);
+      ctx.textAlign='left';
+    }
+
+    function loop(ts){
+      if(!running)return;
+
+      // Score = seconds survived
+      score=Math.floor((ts-startTime)/1000);
+      if(score>best){best=score;bestEl.textContent=best;}
+      scoreEl.textContent=score;
+
+      // Sky gradient
+      const grad=ctx.createLinearGradient(0,0,0,canvas.height);
+      grad.addColorStop(0,'#87ceeb'); grad.addColorStop(1,'#b0e0ff');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // Clouds
+      [[60,80],[200,50],[330,100],[130,150],[280,200]].forEach(([cx,cy])=>{
+        ctx.fillStyle='rgba(255,255,255,0.7)';
+        ctx.beginPath();ctx.ellipse(cx,cy,45,22,0,0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.ellipse(cx+25,cy-8,30,18,0,0,Math.PI*2);ctx.fill();
+      });
+
+      // Harbor (bottom)
+      ctx.fillStyle='#1a6ea8'; ctx.fillRect(0,canvas.height-30,canvas.width,30);
+
+      // Move liberty
+      if(keys.ArrowLeft||keys.a||keys.A) liberty.x-=7;
+      if(keys.ArrowRight||keys.d||keys.D) liberty.x+=7;
+      if(mouseX!==null){
+        const rect=canvas.getBoundingClientRect();
+        liberty.x+=(mouseX-rect.left-LW/2-liberty.x)*0.15;
+      }
+      liberty.x=Math.max(0,Math.min(canvas.width-LW,liberty.x));
+
+      // Spawn gulls
+      if(ts-lastSpawn>spawnInt){
+        gulls.push({x:Math.random()*(canvas.width-30),y:-40,vx:(Math.random()-0.5)*2});
+        lastSpawn=ts;
+        spawnInt=Math.max(400,spawnInt-20);
+        speed=Math.min(12,speed+0.1);
+      }
+
+      // Update gulls
+      gulls.forEach(g=>{ g.y+=speed; g.x+=g.vx; });
+
+      // Collision check
+      for(let g of gulls){
+        if(g.y+30>liberty.y+10 && g.y<liberty.y+LH && g.x+30>liberty.x+8 && g.x<liberty.x+LW-8){
+          running=false; cancelAnimationFrame(raf); endGame(); return;
+        }
+      }
+
+      gulls=gulls.filter(g=>g.y<canvas.height+50);
+
+      // Draw gulls
+      ctx.font='30px serif'; ctx.textAlign='left';
+      gulls.forEach(g=>ctx.fillText('🐦',g.x,g.y+30));
+
+      drawLiberty(liberty.x,liberty.y);
+
+      raf=requestAnimationFrame(loop);
+    }
+
+    function endGame(){
+      overlay.innerHTML=`<h2>🐦 Got You!</h2><div class="final">${score} seconds survived!</div><p>${score>=30?'🏆 Amazing dodger! Lady Liberty is safe!':score>=15?'Great reflexes! Almost got them all!':"The seagulls win this round..."}</p><button onclick="startGame()">Try Again!</button><br><br><a href="../index.html" style="color:#1a5276;font-size:13px;">← All Games</a>`;
+      overlay.style.display='flex';
+    }
+
+    document.addEventListener('keydown',e=>keys[e.key]=true);
+    document.addEventListener('keyup',e=>keys[e.key]=false);
+    canvas.addEventListener('mousemove',e=>{if(running)mouseX=e.clientX;});
+    canvas.addEventListener('touchmove',e=>{e.preventDefault();mouseX=e.touches[0].clientX;},{passive:false});
+    canvas.addEventListener('touchend',()=>mouseX=null);
+  </script>
+</body>
+</html>
