@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hot Takes 🔥 — Lady Liberty Games</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Georgia',serif; min-height:100vh; background:linear-gradient(160deg,#b8f0ff 0%,#d4f5e9 50%,#c2eedb 100%); display:flex; flex-direction:column; align-items:center; padding:30px 16px 80px; overflow-x:hidden; }
+    h1 { font-size:clamp(22px,5vw,40px); color:#0d5c3a; text-shadow:2px 2px 0 rgba(255,255,255,0.8); margin-bottom:6px; text-align:center; }
+    .sub { color:#1a7a4a; font-style:italic; font-size:15px; margin-bottom:28px; text-align:center; }
+    .back { display:inline-block; margin-bottom:20px; color:#0d5c3a; text-decoration:none; font-size:14px; font-weight:bold; }
+    .back:hover { text-decoration:underline; }
+    .game-area { background:rgba(255,255,255,0.92); border:2px solid #a0dfc0; border-radius:24px; padding:28px; max-width:600px; width:100%; box-shadow:0 6px 24px rgba(0,0,0,0.1); }
+    .take-display { background:linear-gradient(135deg,#fff8e1,#ffe082); border-radius:16px; padding:24px; text-align:center; font-size:clamp(16px,3vw,22px); color:#5d4037; font-style:italic; margin-bottom:24px; min-height:100px; display:flex; align-items:center; justify-content:center; border:2px solid #ffcc02; }
+    .reactions { display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+    .react-btn { font-size:28px; background:rgba(255,255,255,0.9); border:2px solid #a0dfc0; border-radius:50px; padding:10px 20px; cursor:pointer; transition:transform 0.15s,box-shadow 0.15s; }
+    .react-btn:hover { transform:scale(1.15); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+    .react-btn.active { background:#d4f5e9; border-color:#2ea043; }
+    .score-bar { display:flex; gap:10px; align-items:center; margin-bottom:20px; font-size:13px; color:#444; }
+    .score-fill { height:14px; border-radius:8px; background:linear-gradient(90deg,#2ea043,#7fff6a); transition:width 0.5s; }
+    .score-track { flex:1; background:#e0f7e9; border-radius:8px; overflow:hidden; }
+    .btn { display:block; width:100%; padding:14px; background:#2ea043; color:#fff; border:none; border-radius:14px; font-size:16px; font-family:'Georgia',serif; cursor:pointer; font-weight:bold; transition:background 0.2s; }
+    .btn:hover { background:#1d8a30; }
+    .tally { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:14px; font-size:13px; color:#555; }
+    .tally span { background:rgba(255,255,255,0.8); border-radius:20px; padding:4px 12px; border:1px solid #a0dfc0; }
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← Back to Games</a>
+  <div style="font-size:64px;margin-bottom:10px;">🔥</div>
+  <h1>Hot Takes!</h1>
+  <p class="sub">React to spicy opinions — do you agree or not?</p>
+  <div class="game-area">
+    <div class="take-display" id="takeDisplay">Press "Next Take" to get started!</div>
+    <div class="reactions">
+      <button class="react-btn" id="btn-agree" onclick="react('agree')">👍 Agree</button>
+      <button class="react-btn" id="btn-disagree" onclick="react('disagree')">👎 Disagree</button>
+      <button class="react-btn" id="btn-fire" onclick="react('fire')">🔥 FIRE</button>
+      <button class="react-btn" id="btn-nope" onclick="react('nope')">🙅 Nope</button>
+    </div>
+    <div class="score-bar">
+      <span>Score:</span>
+      <div class="score-track"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <span id="scoreNum">0</span>
+    </div>
+    <button class="btn" onclick="nextTake()">Next Take →</button>
+    <div class="tally" id="tally"></div>
+  </div>
+  <script>
+    const takes = [
+      "Pizza is better cold than hot.",
+      "NYC bagels are the best food on Earth.",
+      "The Statue of Liberty should wear sunglasses.",
+      "Hot dogs are sandwiches.",
+      "Lady Liberty should have a matching hat.",
+      "Central Park is overrated.",
+      "Times Square is actually fun.",
+      "The subway is the best way to get around NYC.",
+      "Pigeons are secretly running the city.",
+      "Lady Liberty should get a smartphone.",
+      "Skyscrapers are works of art.",
+      "New York has the best skyline in the world.",
+      "You should always tip the pizza delivery person.",
+      "Autumn in New York beats summer every time.",
+      "Ferries are underrated transportation.",
+    ];
+    let idx = 0, score = 0, reactions = {};
+    function nextTake() {
+      if(idx >= takes.length) { idx = 0; }
+      document.getElementById('takeDisplay').textContent = takes[idx++];
+      document.querySelectorAll('.react-btn').forEach(b => b.classList.remove('active'));
+    }
+    function react(type) {
+      reactions[type] = (reactions[type]||0)+1;
+      score += (type==='fire'||type==='agree') ? 2 : 1;
+      document.getElementById('scoreNum').textContent = score;
+      document.getElementById('scoreFill').style.width = Math.min(score*3,100)+'%';
+      document.querySelectorAll('.react-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-'+type).classList.add('active');
+      updateTally();
+    }
+    function updateTally() {
+      const t = document.getElementById('tally');
+      t.innerHTML = Object.entries(reactions).map(([k,v])=>`<span>${{agree:'👍',disagree:'👎',fire:'🔥',nope:'🙅'}[k]||k} ${v}</span>`).join('');
+    }
+    nextTake();
+  </script>
+</body>
+</html>
