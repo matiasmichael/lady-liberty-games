@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>NYC Food Catch 🍕</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:linear-gradient(160deg,#b8f0ff,#d4f5e9);font-family:'Georgia',serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+    .back{position:fixed;top:12px;left:12px;color:#0d5c3a;text-decoration:none;font-size:14px;background:rgba(255,255,255,0.85);padding:5px 12px;border-radius:20px;border:1px solid #a0dfc0}
+    h1{font-size:clamp(20px,4vw,32px);color:#0d5c3a;margin-bottom:4px;text-align:center}
+    .sub{color:#555;font-size:13px;margin-bottom:12px;font-style:italic}
+    #score-bar{display:flex;gap:28px;margin-bottom:12px;font-size:16px;color:#0d5c3a}
+    #score-bar span{font-weight:bold;font-size:20px;color:#e8820c}
+    #canvas-wrap{position:relative;border:3px solid #a0dfc0;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+    canvas{display:block}
+    #overlay{position:absolute;inset:0;background:rgba(184,240,255,0.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px}
+    #overlay h2{font-size:26px;color:#0d5c3a;margin-bottom:10px}
+    #overlay p{color:#333;margin-bottom:20px;font-size:14px;line-height:1.6}
+    .final{font-size:30px;color:#e8820c;font-weight:bold;margin-bottom:8px}
+    button{background:#2ea043;color:#fff;border:none;padding:12px 30px;font-size:17px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:bold}
+    button:hover{background:#3fb950}
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← All Games</a>
+  <h1>🍕 NYC Food Catch</h1>
+  <p class="sub">Catch the yummy New York food before it splats!</p>
+  <div id="score-bar">Score: <span id="score">0</span>&nbsp;|&nbsp;Best: <span id="best">0</span>&nbsp;|&nbsp;Lives: <span id="lives">❤️❤️❤️</span></div>
+  <div id="canvas-wrap">
+    <canvas id="c" width="400" height="500"></canvas>
+    <div id="overlay">
+      <h2>🍕 NYC Food Catch</h2>
+      <p>Yummy foods are falling from the sky!<br>Move the plate to catch them all!<br>But don’t catch the 💩 — that’s not food!<br><br>←→ Arrow keys | Mouse | Touch</p>
+      <button onclick="startGame()">Let’s Eat!</button>
+    </div>
+  </div>
+  <script>
+    const FOODS=['🍕','🥯','🌭','🧀','🍩','🍦','🍎','🍌'];
+    const BAD=['💩','🐞'];
+    const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+    const overlay=document.getElementById('overlay');
+    const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),livesEl=document.getElementById('lives');
+    let score,lives,best=0,items,plate,speed,dropInt,lastDrop,raf,running;
+    const PW=90,PH=16;
+    const keys={};
+    let mouseX=null;
+
+    function startGame(){
+      overlay.style.display='none';
+      score=0;lives=3;speed=3.2;dropInt=1300;
+      items=[];plate={x:canvas.width/2-PW/2,y:canvas.height-44};
+      lastDrop=0;running=true;
+      scoreEl.textContent=0;livesEl.textContent='❤️❤️❤️';
+      cancelAnimationFrame(raf);loop(0);
+    }
+
+    function loop(ts){
+      if(!running)return;
+      // BG
+      ctx.fillStyle='#e8f8ff';ctx.fillRect(0,0,canvas.width,canvas.height);
+      // City skyline BG
+      ctx.fillStyle='#c8e8f8';
+      [[0,350,60,150],[70,370,50,130],[130,340,80,160],[220,360,55,140],[285,345,70,155],[365,355,60,145]].forEach(([x,y,w,h])=>{
+        ctx.fillRect(x,y,w,h);
+      });
+
+      // Move plate
+      if(keys.ArrowLeft||keys.a||keys.A) plate.x-=7;
+      if(keys.ArrowRight||keys.d||keys.D) plate.x+=7;
+      if(mouseX!==null){const rect=canvas.getBoundingClientRect();plate.x+=(mouseX-rect.left-PW/2-plate.x)*0.18;}
+      plate.x=Math.max(0,Math.min(canvas.width-PW,plate.x));
+
+      // Spawn
+      if(ts-lastDrop>dropInt){
+        const isBad=Math.random()<0.2;
+        const emoji=isBad?BAD[Math.floor(Math.random()*BAD.length)]:FOODS[Math.floor(Math.random()*FOODS.length)];
+        items.push({x:Math.random()*(canvas.width-36),y:-36,emoji,bad:isBad,done:false});
+        lastDrop=ts;dropInt=Math.max(480,dropInt-16);speed=Math.min(10,speed+0.1);
+      }
+
+      // Update items
+      ctx.font='34px serif';
+      items.forEach(it=>{
+        if(it.done)return;
+        it.y+=speed;
+        ctx.fillText(it.emoji,it.x,it.y+34);
+        if(it.y+34>=plate.y&&it.x+34>plate.x&&it.x<plate.x+PW){
+          it.done=true;
+          if(it.bad){lives--;livesEl.textContent='❤️'.repeat(Math.max(0,lives));if(lives<=0){endGame();return;}}
+          else{score++;scoreEl.textContent=score;if(score>best){best=score;bestEl.textContent=best;}}
+        } else if(it.y>canvas.height){
+          it.done=true;
+          if(!it.bad){lives--;livesEl.textContent='❤️'.repeat(Math.max(0,lives));if(lives<=0){endGame();return;}}
+        }
+      });
+      items=items.filter(it=>it.y<=canvas.height+40);
+
+      // Draw plate
+      ctx.fillStyle='#fff';
+      ctx.beginPath();ctx.ellipse(plate.x+PW/2,plate.y+PH/2,PW/2,PH/2,0,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#a0dfc0';ctx.lineWidth=2;
+      ctx.beginPath();ctx.ellipse(plate.x+PW/2,plate.y+PH/2,PW/2,PH/2,0,0,Math.PI*2);ctx.stroke();
+      ctx.font='20px serif';ctx.fillText('🗽',plate.x+PW/2-10,plate.y-4);
+
+      raf=requestAnimationFrame(loop);
+    }
+
+    function endGame(){
+      running=false;cancelAnimationFrame(raf);
+      overlay.innerHTML=`<h2>${score>=20?'🍕 Full Plate!':'🙄 Hungry…'}</h2><div class="final">${score} foods caught!</div><p>${score>=20?'Amazing! Lady Liberty loves your cooking!':score>=10?'Yum! Great job catching!':"Don't give up — the pizza needs you!"}</p><button onclick="startGame()">Play Again!</button><br><br><a href="../index.html" style="color:#0d5c3a;font-size:13px;">← All Games</a>`;
+      overlay.style.display='flex';
+    }
+
+    document.addEventListener('keydown',e=>keys[e.key]=true);
+    document.addEventListener('keyup',e=>keys[e.key]=false);
+    canvas.addEventListener('mousemove',e=>{if(running)mouseX=e.clientX;});
+    canvas.addEventListener('touchmove',e=>{e.preventDefault();mouseX=e.touches[0].clientX;},{passive:false});
+    canvas.addEventListener('touchend',()=>mouseX=null);
+  </script>
+</body>
+</html>

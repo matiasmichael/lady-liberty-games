@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Harbor Runner ⛵</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:linear-gradient(160deg,#b8f0ff,#7dd8f8);font-family:'Georgia',serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+    .back{position:fixed;top:12px;left:12px;color:#0d5c3a;text-decoration:none;font-size:14px;background:rgba(255,255,255,0.85);padding:5px 12px;border-radius:20px;border:1px solid #a0dfc0}
+    h1{font-size:clamp(20px,4vw,32px);color:#0d4a6e;margin-bottom:4px;text-align:center}
+    .sub{color:#555;font-size:13px;margin-bottom:12px;font-style:italic}
+    #score-bar{display:flex;gap:28px;margin-bottom:12px;font-size:16px;color:#0d4a6e}
+    #score-bar span{font-weight:bold;font-size:20px;color:#e8820c}
+    #canvas-wrap{position:relative;border:3px solid #7dd8f8;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+    canvas{display:block}
+    #overlay{position:absolute;inset:0;background:rgba(184,240,255,0.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px}
+    #overlay h2{font-size:26px;color:#0d4a6e;margin-bottom:10px}
+    #overlay p{color:#333;margin-bottom:20px;font-size:14px;line-height:1.6}
+    .final{font-size:30px;color:#e8820c;font-weight:bold;margin-bottom:8px}
+    button{background:#0d4a6e;color:#fff;border:none;padding:12px 30px;font-size:17px;border-radius:20px;cursor:pointer;font-family:inherit;font-weight:bold}
+    button:hover{background:#1565a0}
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← All Games</a>
+  <h1>⛵ Harbor Runner</h1>
+  <p class="sub">Navigate through New York Harbor without crashing!</p>
+  <div id="score-bar">Score: <span id="score">0</span>&nbsp;|&nbsp;Best: <span id="best">0</span></div>
+  <div id="canvas-wrap">
+    <canvas id="c" width="400" height="520"></canvas>
+    <div id="overlay">
+      <h2>⛵ Harbor Runner</h2>
+      <p>Lady Liberty’s boat is sailing through the harbor!<br>Dodge the big tourist boats — and don’t hit the rocks!<br><br>←→ Arrow keys | Mouse | Touch<br>The longer you sail, the more boats appear!</p>
+      <button onclick="startGame()">Set Sail!</button>
+    </div>
+  </div>
+  <script>
+    const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+    const overlay=document.getElementById('overlay');
+    const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best');
+    let boat,obstacles,score,best=0,speed,spawnInt,lastSpawn,raf,running,startTime;
+    const BW=50,BH=36;
+    const keys={};
+    let mouseX=null;
+
+    function startGame(){
+      overlay.style.display='none';
+      boat={x:canvas.width/2-BW/2,y:canvas.height-80};
+      obstacles=[];score=0;speed=2.8;spawnInt=1400;
+      lastSpawn=0;running=true;startTime=performance.now();
+      scoreEl.textContent=0;
+      cancelAnimationFrame(raf);loop(0);
+    }
+
+    function drawWater(ts){
+      const grad=ctx.createLinearGradient(0,0,0,canvas.height);
+      grad.addColorStop(0,'#7dd8f8');grad.addColorStop(1,'#3ab5e5');
+      ctx.fillStyle=grad;ctx.fillRect(0,0,canvas.width,canvas.height);
+      // Wave lines
+      ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=2;
+      for(let i=0;i<8;i++){
+        const y=((ts/1000*30+i*70)%canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(0,y);
+        for(let x=0;x<canvas.width;x+=20)
+          ctx.lineTo(x,y+Math.sin(x/30+ts/800)*4);
+        ctx.stroke();
+      }
+    }
+
+    function loop(ts){
+      if(!running)return;
+      score=Math.floor((ts-startTime)/1000);
+      if(score>best){best=score;bestEl.textContent=best;}
+      scoreEl.textContent=score;
+
+      drawWater(ts);
+
+      // Move boat
+      if(keys.ArrowLeft||keys.a||keys.A) boat.x-=7;
+      if(keys.ArrowRight||keys.d||keys.D) boat.x+=7;
+      if(mouseX!==null){const rect=canvas.getBoundingClientRect();boat.x+=(mouseX-rect.left-BW/2-boat.x)*0.15;}
+      boat.x=Math.max(0,Math.min(canvas.width-BW,boat.x));
+
+      // Spawn obstacles
+      if(ts-lastSpawn>spawnInt){
+        const types=['🚢','⛵','🧨'];// big ship, sailboat, rock
+        const t=types[Math.floor(Math.random()*types.length)];
+        obstacles.push({x:Math.random()*(canvas.width-50),y:-50,emoji:t,w:t==='🚢'?50:36,h:t==='🚢'?50:36});
+        lastSpawn=ts;spawnInt=Math.max(500,spawnInt-18);speed=Math.min(10,speed+0.1);
+      }
+
+      // Update obstacles
+      ctx.font='40px serif';
+      obstacles.forEach(ob=>{
+        ob.y+=speed;
+        ctx.fillText(ob.emoji,ob.x,ob.y+ob.h);
+        // Collision
+        if(ob.y+ob.h>boat.y+6&&ob.y<boat.y+BH&&ob.x+ob.w>boat.x+6&&ob.x<boat.x+BW-6){
+          running=false;cancelAnimationFrame(raf);endGame();return;
+        }
+      });
+      obstacles=obstacles.filter(ob=>ob.y<canvas.height+60);
+
+      // Draw Liberty's boat
+      ctx.font='44px serif';ctx.textAlign='center';
+      ctx.fillText('⛵',boat.x+BW/2,boat.y+BH);
+      ctx.font='18px serif';
+      ctx.fillText('🗽',boat.x+BW/2,boat.y+4);
+      ctx.textAlign='left';
+
+      raf=requestAnimationFrame(loop);
+    }
+
+    function endGame(){
+      overlay.innerHTML=`<h2>${score>=30?'�ﱅ Harbor Champion!':'💨 Crash!'}</h2><div class="final">${score} seconds sailed!</div><p>${score>=30?'Amazing captain! Lady Liberty is so proud!':score>=15?'Great sailing! The harbor is tricky!':"Keep practicing — you'll be a captain soon!"}</p><button onclick="startGame()">Sail Again!</button><br><br><a href="../index.html" style="color:#0d4a6e;font-size:13px;">← All Games</a>`;
+      overlay.style.display='flex';
+    }
+
+    document.addEventListener('keydown',e=>keys[e.key]=true);
+    document.addEventListener('keyup',e=>keys[e.key]=false);
+    canvas.addEventListener('mousemove',e=>{if(running)mouseX=e.clientX;});
+    canvas.addEventListener('touchmove',e=>{e.preventDefault();mouseX=e.touches[0].clientX;},{passive:false});
+    canvas.addEventListener('touchend',()=>mouseX=null);
+  </script>
+</body>
+</html>

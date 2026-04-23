@@ -9,172 +9,51 @@
     body {
       font-family: 'Georgia', serif;
       min-height: 100vh;
-      background: linear-gradient(180deg, #87CEEB 0%, #b0e8ff 40%, #c8f0c0 70%, #e8f5e3 100%);
+      background: linear-gradient(160deg, #b8f0ff 0%, #d4f5e9 50%, #c2eedb 100%);
       position: relative;
       overflow-x: hidden;
     }
-
-    /* Clouds */
     .cloud {
       position: fixed;
       background: white;
       border-radius: 50px;
-      opacity: 0.85;
+      opacity: 0.8;
       pointer-events: none;
       animation: float linear infinite;
     }
-    .cloud::before, .cloud::after {
-      content: '';
-      position: absolute;
-      background: white;
-      border-radius: 50%;
-    }
-    .cloud::before { width: 60%; height: 130%; top: -40%; left: 15%; }
-    .cloud::after  { width: 45%; height: 110%; top: -30%; right: 12%; }
-    @keyframes float {
-      from { transform: translateX(-200px); }
-      to   { transform: translateX(110vw); }
-    }
-
-    /* Sun */
-    .sun {
-      position: fixed;
-      top: 24px;
-      right: 48px;
-      width: 80px;
-      height: 80px;
-      background: radial-gradient(circle, #ffe066 60%, #ffb700 100%);
-      border-radius: 50%;
-      box-shadow: 0 0 40px 10px rgba(255,220,0,0.4);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Water */
-    .water {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 90px;
-      background: linear-gradient(180deg, #48b3e8 0%, #1a82c4 100%);
-      opacity: 0.55;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .water-wave {
-      position: fixed;
-      bottom: 70px;
-      left: 0;
-      width: 200%;
-      height: 30px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 30'%3E%3Cpath d='M0,15 C100,0 200,30 300,15 C400,0 500,30 600,15 C700,0 800,30 800,15 L800,30 L0,30 Z' fill='%2348b3e8' opacity='0.6'/%3E%3C/svg%3E") repeat-x;
-      animation: wave 4s linear infinite;
-      pointer-events: none;
-      z-index: 0;
-    }
-    @keyframes wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-    header {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      padding: 36px 20px 24px;
-    }
-    .statue { font-size: 88px; margin-bottom: 8px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15)); }
-    h1 {
-      font-size: clamp(28px, 6vw, 56px);
-      color: #1a5c1a;
-      text-shadow: 2px 2px 0 rgba(255,255,255,0.7);
-      letter-spacing: 2px;
-      margin-bottom: 6px;
-    }
-    .tagline {
-      color: #2a7a2a;
-      font-style: italic;
-      font-size: clamp(14px, 2.5vw, 20px);
-      text-shadow: 1px 1px 0 rgba(255,255,255,0.6);
-    }
-    .dedication {
-      margin-top: 8px;
-      color: #b85c00;
-      font-size: 15px;
-      font-weight: bold;
-      text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-    }
-
-    .games-grid {
-      position: relative;
-      z-index: 2;
-      max-width: 1100px;
-      margin: 30px auto 120px;
-      padding: 0 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 22px;
-    }
-    .game-card {
-      background: rgba(255,255,255,0.88);
-      border: 2px solid #a8d8a8;
-      border-radius: 20px;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      text-decoration: none;
-      color: inherit;
-      display: block;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    }
-    .game-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 16px 48px rgba(0,100,0,0.18);
-      border-color: #2ea043;
-    }
-    .game-thumb {
-      height: 130px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 68px;
-    }
-    .game-info { padding: 16px 18px 18px; }
-    .game-title {
-      font-size: 18px;
-      color: #1a5c1a;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-    .game-desc { font-size: 13px; color: #444; line-height: 1.5; }
-    .badge {
-      display: inline-block;
-      background: #2ea043;
-      color: #fff;
-      font-size: 10px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 20px;
-      margin-top: 10px;
-    }
-    .new-badge { background: #e8820c; }
-    .soon-badge { background: #aaa; }
-
-    footer {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      padding: 20px;
-      color: #2a6e2a;
-      font-size: 13px;
-    }
+    .cloud::before, .cloud::after { content:''; position:absolute; background:white; border-radius:50%; }
+    .cloud::before { width:60%; height:130%; top:-40%; left:15%; }
+    .cloud::after  { width:45%; height:110%; top:-30%; right:12%; }
+    @keyframes float { from{transform:translateX(-200px)} to{transform:translateX(110vw)} }
+    .sun { position:fixed; top:20px; right:44px; width:72px; height:72px; background:radial-gradient(circle,#ffe066 60%,#ffb700 100%); border-radius:50%; box-shadow:0 0 36px 10px rgba(255,220,0,0.35); pointer-events:none; z-index:0; }
+    .water { position:fixed; bottom:0; left:0; width:100%; height:80px; background:linear-gradient(180deg,#7dd8f8 0%,#3ab5e5 100%); opacity:0.45; pointer-events:none; z-index:0; }
+    .water-wave { position:fixed; bottom:60px; left:0; width:200%; height:28px; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 30'%3E%3Cpath d='M0,15 C100,0 200,30 300,15 C400,0 500,30 600,15 C700,0 800,30 800,15 L800,30 L0,30 Z' fill='%237dd8f8' opacity='0.5'/%3E%3C/svg%3E") repeat-x; animation:wave 4s linear infinite; pointer-events:none; z-index:0; }
+    @keyframes wave { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    header { position:relative; z-index:2; text-align:center; padding:36px 20px 20px; }
+    .statue { font-size:88px; margin-bottom:8px; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.12)); }
+    h1 { font-size:clamp(26px,6vw,52px); color:#0d5c3a; text-shadow:2px 2px 0 rgba(255,255,255,0.8); letter-spacing:2px; margin-bottom:6px; }
+    .tagline { color:#1a7a4a; font-style:italic; font-size:clamp(13px,2.2vw,19px); text-shadow:1px 1px 0 rgba(255,255,255,0.6); }
+    .dedication { margin-top:8px; color:#c05c00; font-size:15px; font-weight:bold; text-shadow:1px 1px 0 rgba(255,255,255,0.5); }
+    .games-grid { position:relative; z-index:2; max-width:1100px; margin:28px auto 130px; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px; }
+    .game-card { background:rgba(255,255,255,0.9); border:2px solid #a0dfc0; border-radius:20px; overflow:hidden; transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s; text-decoration:none; color:inherit; display:block; box-shadow:0 4px 14px rgba(0,0,0,0.08); }
+    .game-card:hover { transform:translateY(-8px) scale(1.02); box-shadow:0 16px 44px rgba(0,120,80,0.18); border-color:#2ea043; }
+    .game-card.soon { cursor:default; opacity:0.85; }
+    .game-thumb { height:120px; display:flex; align-items:center; justify-content:center; font-size:64px; }
+    .game-info { padding:14px 16px 16px; }
+    .game-title { font-size:17px; color:#0d5c3a; margin-bottom:5px; font-weight:bold; }
+    .game-desc { font-size:13px; color:#444; line-height:1.5; }
+    .badge { display:inline-block; font-size:10px; font-weight:bold; letter-spacing:1px; text-transform:uppercase; padding:4px 10px; border-radius:20px; margin-top:9px; color:#fff; }
+    .b-play { background:#2ea043; }
+    .b-alma { background:#e8820c; }
+    .b-soon { background:#6baed6; }
+    footer { position:relative; z-index:2; text-align:center; padding:18px; color:#0d5c3a; font-size:13px; }
   </style>
 </head>
 <body>
-  <!-- Sky decorations -->
   <div class="sun"></div>
-  <div class="cloud" style="width:140px;height:44px;top:60px;animation-duration:28s;animation-delay:-5s"></div>
-  <div class="cloud" style="width:100px;height:34px;top:110px;animation-duration:22s;animation-delay:-12s"></div>
-  <div class="cloud" style="width:180px;height:52px;top:40px;animation-duration:35s;animation-delay:-20s"></div>
+  <div class="cloud" style="width:140px;height:44px;top:55px;animation-duration:28s;animation-delay:-5s"></div>
+  <div class="cloud" style="width:100px;height:34px;top:105px;animation-duration:22s;animation-delay:-12s"></div>
+  <div class="cloud" style="width:175px;height:50px;top:38px;animation-duration:35s;animation-delay:-20s"></div>
   <div class="water"></div>
   <div class="water-wave"></div>
 
@@ -188,77 +67,37 @@
   <div class="games-grid">
     <a class="game-card" href="torch-catcher/index.html">
       <div class="game-thumb" style="background:linear-gradient(135deg,#fff8e1,#ffe082)">🔥</div>
-      <div class="game-info">
-        <div class="game-title">Torch Catcher</div>
-        <div class="game-desc">Lady Liberty's torch keeps slipping! Catch the falling flames before they hit the ground!</div>
-        <span class="badge">Play Now</span>
-      </div>
+      <div class="game-info"><div class="game-title">Torch Catcher</div><div class="game-desc">Catch Lady Liberty's falling torches before they hit the ground!</div><span class="badge b-play">Play Now</span></div>
     </a>
-
     <a class="game-card" href="color-liberty/index.html">
       <div class="game-thumb" style="background:linear-gradient(135deg,#f3e5f5,#e1bee7)">🎨</div>
-      <div class="game-info">
-        <div class="game-title">Color Lady Liberty!</div>
-        <div class="game-desc">Pick your favorite colors and paint Lady Liberty however you like! Save your artwork!</div>
-        <span class="badge new-badge">⭐ Alma's Pick!</span>
-      </div>
+      <div class="game-info"><div class="game-title">Color Lady Liberty!</div><div class="game-desc">Paint Lady Liberty any color you want and save your masterpiece!</div><span class="badge b-alma">⭐ Alma's Pick!</span></div>
     </a>
-
     <a class="game-card" href="crown-collector/index.html">
       <div class="game-thumb" style="background:linear-gradient(135deg,#fffde7,#fff59d)">⭐</div>
-      <div class="game-info">
-        <div class="game-title">Crown Collector</div>
-        <div class="game-desc">Catch falling stars to fill Lady Liberty's crown. How sparkly can you make it?</div>
-        <span class="badge new-badge">⭐ Alma's Pick!</span>
-      </div>
+      <div class="game-info"><div class="game-title">Crown Collector</div><div class="game-desc">Catch falling stars to fill Lady Liberty's sparkling crown!</div><span class="badge b-alma">⭐ Alma's Pick!</span></div>
     </a>
-
     <a class="game-card" href="seagull-dodge/index.html">
       <div class="game-thumb" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb)">🐦</div>
-      <div class="game-info">
-        <div class="game-title">Seagull Dodge</div>
-        <div class="game-desc">Help Lady Liberty dodge the pesky New York seagulls flying straight at her!</div>
-        <span class="badge new-badge">⭐ Alma's Pick!</span>
-      </div>
+      <div class="game-info"><div class="game-title">Seagull Dodge</div><div class="game-desc">Dodge the pesky New York seagulls flying straight at Lady Liberty!</div><span class="badge b-alma">⭐ Alma's Pick!</span></div>
     </a>
-
     <a class="game-card" href="liberty-puzzle/index.html">
       <div class="game-thumb" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9)">🧩</div>
-      <div class="game-info">
-        <div class="game-title">Liberty Puzzle</div>
-        <div class="game-desc">Drag the pieces and put Lady Liberty back together! Can you do it?</div>
-        <span class="badge new-badge">⭐ Alma's Pick!</span>
-      </div>
+      <div class="game-info"><div class="game-title">Liberty Puzzle</div><div class="game-desc">Drag the pieces and rebuild Lady Liberty! Can you do it?</div><span class="badge b-alma">⭐ Alma's Pick!</span></div>
     </a>
-
-    <div class="game-card" style="cursor:default">
-      <div class="game-thumb" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0)">🍕</div>
-      <div class="game-info">
-        <div class="game-title">NYC Food Catch</div>
-        <div class="game-desc">Catch falling New York foods — pizza, bagels, hot dogs! Yum!</div>
-        <span class="badge soon-badge">Coming Soon!</span>
-      </div>
-    </div>
-
-    <div class="game-card" style="cursor:default">
-      <div class="game-thumb" style="background:linear-gradient(135deg,#e8eaf6,#c5cae9)">👗</div>
-      <div class="game-info">
-        <div class="game-title">Dress Lady Liberty</div>
-        <div class="game-desc">Pick her outfit, accessories and colors! Make Lady Liberty super fashionable!</div>
-        <span class="badge soon-badge">Coming Soon!</span>
-      </div>
-    </div>
-
-    <div class="game-card" style="cursor:default">
-      <div class="game-thumb" style="background:linear-gradient(135deg,#e0f7fa,#b2ebf2)">🌊</div>
-      <div class="game-info">
-        <div class="game-title">Harbor Runner</div>
-        <div class="game-desc">Navigate Lady Liberty's boat through New York Harbor, dodging tourist ships!</div>
-        <span class="badge soon-badge">Coming Soon!</span>
-      </div>
-    </div>
+    <a class="game-card" href="nyc-food-catch/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#fce4ec,#ffccbc)">🍕</div>
+      <div class="game-info"><div class="game-title">NYC Food Catch</div><div class="game-desc">Catch falling New York foods — pizza, bagels, hot dogs — before they splat!</div><span class="badge b-alma">⭐ Alma's Pick!</span></div>
+    </a>
+    <a class="game-card" href="dress-liberty/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#f8bbd0,#e1bee7)">👗</div>
+      <div class="game-info"><div class="game-title">Dress Lady Liberty!</div><div class="game-desc">Pick her outfit, crown, accessories and colors! Make her super stylish!</div><span class="badge b-alma">⭐ Alma's Pick!</span></div>
+    </a>
+    <a class="game-card" href="harbor-runner/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#e0f7fa,#b2ebf2)">⛵</div>
+      <div class="game-info"><div class="game-title">Harbor Runner</div><div class="game-desc">Navigate Lady Liberty's boat through New York Harbor without crashing!</div><span class="badge b-alma">⭐ Alma's Pick!</span></div>
+    </a>
   </div>
-
   <footer>🗽 Lady Liberty Games — Made with 💚 for Alma</footer>
 </body>
 </html>
