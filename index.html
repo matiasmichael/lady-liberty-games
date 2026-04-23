@@ -34,7 +34,8 @@
     h1 { font-size:clamp(26px,6vw,52px); color:#0d5c3a; text-shadow:2px 2px 0 rgba(255,255,255,0.8); letter-spacing:2px; margin-bottom:6px; }
     .tagline { color:#1a7a4a; font-style:italic; font-size:clamp(13px,2.2vw,19px); text-shadow:1px 1px 0 rgba(255,255,255,0.6); }
     .dedication { margin-top:8px; color:#c05c00; font-size:15px; font-weight:bold; text-shadow:1px 1px 0 rgba(255,255,255,0.5); }
-    .games-grid { position:relative; z-index:2; max-width:1100px; margin:28px auto 130px; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px; }
+    .section-label { position:relative; z-index:2; text-align:center; font-size:clamp(13px,2vw,16px); color:#0d5c3a; font-weight:bold; letter-spacing:1px; text-transform:uppercase; margin:28px 0 0; opacity:0.75; }
+    .games-grid { position:relative; z-index:2; max-width:1100px; margin:14px auto 20px; padding:0 20px; display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:20px; }
     .game-card { background:rgba(255,255,255,0.9); border:2px solid #a0dfc0; border-radius:20px; overflow:hidden; transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s; text-decoration:none; color:inherit; display:block; box-shadow:0 4px 14px rgba(0,0,0,0.08); }
     .game-card:hover { transform:translateY(-8px) scale(1.02); box-shadow:0 16px 44px rgba(0,120,80,0.18); border-color:#2ea043; }
     .game-card.soon { cursor:default; opacity:0.85; }
@@ -46,7 +47,8 @@
     .b-play { background:#2ea043; }
     .b-alma { background:#e8820c; }
     .b-soon { background:#6baed6; }
-    footer { position:relative; z-index:2; text-align:center; padding:18px; color:#0d5c3a; font-size:13px; }
+    .b-new  { background:#7b1fa2; }
+    footer { position:relative; z-index:2; text-align:center; padding:18px; color:#0d5c3a; font-size:13px; margin-top:80px; }
   </style>
 </head>
 <body>
@@ -60,13 +62,14 @@
   <header>
     <div class="statue">🗽</div>
     <h1>Lady Liberty Games</h1>
-    <p class="tagline">“Give me your tired, your poor, your high scores.”</p>
-    <p class="dedication">✨ Lovingly designed by Alma ✨</p>
+    <p class="tagline">"Give me your tired, your poor, your high scores."</p>
+    <p class="dedication">❤ Lovingly designed by Alma ❤</p>
   </header>
 
+  <p class="section-label">🎮 Classic Games</p>
   <div class="games-grid">
     <a class="game-card" href="torch-catcher/index.html">
-      <div class="game-thumb" style="background:linear-gradient(135deg,#fff8e1,#ffe082)">🔥</div>
+      <div class="game-thumb" style="background:linear-gradient(135deg,#fff8e1,#ffe082)">🔦</div>
       <div class="game-info"><div class="game-title">Torch Catcher</div><div class="game-desc">Catch Lady Liberty's falling torches before they hit the ground!</div><span class="badge b-play">Play Now</span></div>
     </a>
     <a class="game-card" href="color-liberty/index.html">
@@ -98,6 +101,23 @@
       <div class="game-info"><div class="game-title">Harbor Runner</div><div class="game-desc">Navigate Lady Liberty's boat through New York Harbor without crashing!</div><span class="badge b-alma">⭐ Alma's Pick!</span></div>
     </a>
   </div>
-  <footer>🗽 Lady Liberty Games — Made with 💚 for Alma</footer>
+
+  <p class="section-label">✨ New Games</p>
+  <div class="games-grid">
+    <a class="game-card" href="hot-takes/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#fff8e1,#ffe082)">🔥</div>
+      <div class="game-info"><div class="game-title">Hot Takes!</div><div class="game-desc">React to spicy opinions — agree, disagree, or call it fire!</div><span class="badge b-new">✨ New!</span></div>
+    </a>
+    <a class="game-card" href="emoji-decoder/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9)">🤔</div>
+      <div class="game-info"><div class="game-title">Emoji Decoder</div><div class="game-desc">Guess the Lady Liberty phrase from the emoji clues!</div><span class="badge b-new">✨ New!</span></div>
+    </a>
+    <a class="game-card" href="this-or-that/index.html">
+      <div class="game-thumb" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb)">🤷</div>
+      <div class="game-info"><div class="game-title">This or That</div><div class="game-desc">Quick NYC-themed choices — which side are you on?</div><span class="badge b-new">✨ New!</span></div>
+    </a>
+  </div>
+
+  <footer>🗽 Lady Liberty Games • Made with 💚 for Alma</footer>
 </body>
 </html>
