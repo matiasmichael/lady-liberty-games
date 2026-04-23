@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>This or That 🤷 — Lady Liberty Games</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Georgia',serif; min-height:100vh; background:linear-gradient(160deg,#b8f0ff 0%,#d4f5e9 50%,#c2eedb 100%); display:flex; flex-direction:column; align-items:center; padding:30px 16px 80px; }
+    h1 { font-size:clamp(22px,5vw,40px); color:#0d5c3a; text-shadow:2px 2px 0 rgba(255,255,255,0.8); margin-bottom:6px; text-align:center; }
+    .sub { color:#1a7a4a; font-style:italic; font-size:15px; margin-bottom:28px; text-align:center; }
+    .back { display:inline-block; margin-bottom:20px; color:#0d5c3a; text-decoration:none; font-size:14px; font-weight:bold; }
+    .back:hover { text-decoration:underline; }
+    .game-area { background:rgba(255,255,255,0.92); border:2px solid #a0dfc0; border-radius:24px; padding:28px; max-width:560px; width:100%; box-shadow:0 6px 24px rgba(0,0,0,0.1); }
+    .question { text-align:center; font-size:clamp(14px,3vw,18px); color:#333; margin-bottom:24px; min-height:50px; display:flex; align-items:center; justify-content:center; }
+    .choices { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+    .choice { padding:20px 14px; border-radius:20px; border:3px solid #a0dfc0; cursor:pointer; text-align:center; font-size:clamp(14px,3vw,18px); font-family:'Georgia',serif; font-weight:bold; transition:all 0.2s; background:rgba(255,255,255,0.8); }
+    .choice:first-child { color:#0d5c3a; }
+    .choice:last-child { color:#1565c0; }
+    .choice:hover { transform:scale(1.04); box-shadow:0 6px 20px rgba(0,0,0,0.12); }
+    .choice.chosen { transform:scale(1.08); box-shadow:0 8px 28px rgba(0,0,0,0.18); border-width:4px; }
+    .vs { text-align:center; font-size:24px; font-weight:bold; color:#0d5c3a; margin:0 0 20px; }
+    .progress { text-align:center; color:#888; font-size:13px; margin-bottom:14px; }
+    .btn { display:block; width:100%; padding:14px; background:#2ea043; color:#fff; border:none; border-radius:14px; font-size:16px; font-family:'Georgia',serif; cursor:pointer; font-weight:bold; }
+    .btn:hover { background:#1d8a30; }
+    .history { margin-top:18px; font-size:13px; color:#555; }
+    .history-item { padding:6px 0; border-bottom:1px solid #e0f7e9; display:flex; justify-content:space-between; }
+  </style>
+</head>
+<body>
+  <a class="back" href="../index.html">← Back to Games</a>
+  <div style="font-size:64px;margin-bottom:10px;">🤷</div>
+  <h1>This or That!</h1>
+  <p class="sub">Quick choices — which do you pick?</p>
+  <div class="game-area">
+    <div class="progress" id="progress"></div>
+    <div class="question" id="question"></div>
+    <div class="vs">VS</div>
+    <div class="choices">
+      <div class="choice" id="choiceA" onclick="pick('A')"></div>
+      <div class="choice" id="choiceB" onclick="pick('B')"></div>
+    </div>
+    <button class="btn" onclick="next()" id="nextBtn" style="display:none">Next →</button>
+    <div class="history" id="history"></div>
+  </div>
+  <script>
+    const questions = [
+      {q:"NYC food?", a:"🍕 Pizza", b:"🥯 Bagel"},
+      {q:"Lady Liberty activity?", a:"🔦 Hold Torch", b:"👑 Wear Crown"},
+      {q:"NYC transport?", a:"🚇 Subway", b:"🚕 Taxi"},
+      {q:"NYC season?", a:"🍂 Autumn", b:"☀️ Summer"},
+      {q:"NYC landmark?", a:"🗽 Statue of Liberty", b:"🏙️ Empire State"},
+      {q:"NYC sound?", a:"🎷 Jazz", b:"🎸 Rock"},
+      {q:"Weekend vibe?", a:"🌳 Central Park", b:"🛍️ Shopping"},
+      {q:"NYC view?", a:"🌉 Brooklyn Bridge", b:"🌆 Manhattan Skyline"},
+      {q:"NYC snack?", a:"🥨 Pretzel", b:"🍦 Ice Cream"},
+      {q:"Liberty style?", a:"💚 Classic Green", b:"✨ Gold Sparkle"},
+    ];
+    let idx=0, picks=[], chosen=false;
+    function load() {
+      if(idx>=questions.length){ done(); return; }
+      const q=questions[idx];
+      document.getElementById('progress').textContent=(idx+1)+' / '+questions.length;
+      document.getElementById('question').textContent=q.q;
+      document.getElementById('choiceA').textContent=q.a;
+      document.getElementById('choiceB').textContent=q.b;
+      document.getElementById('choiceA').classList.remove('chosen');
+      document.getElementById('choiceB').classList.remove('chosen');
+      document.getElementById('nextBtn').style.display='none';
+      chosen=false;
+    }
+    function pick(side) {
+      if(chosen) return;
+      chosen=true;
+      const q=questions[idx];
+      const answer=side==='A'?q.a:q.b;
+      picks.push({q:q.q, pick:answer});
+      document.getElementById('choice'+side).classList.add('chosen');
+      document.getElementById('nextBtn').style.display='block';
+      updateHistory();
+    }
+    function next(){ idx++; load(); }
+    function done(){
+      document.getElementById('question').textContent='All done! 🎉 Here are your choices:';
+      document.getElementById('choiceA').style.display='none';
+      document.getElementById('choiceB').style.display='none';
+      document.querySelector('.vs').style.display='none';
+      document.getElementById('nextBtn').style.display='none';
+    }
+    function updateHistory(){
+      const h=document.getElementById('history');
+      h.innerHTML=picks.slice().reverse().map(p=>`<div class="history-item"><span>${p.q}</span><strong>${p.pick}</strong></div>`).join('');
+    }
+    load();
+  </script>
+</body>
+</html>
