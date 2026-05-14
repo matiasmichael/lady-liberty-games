@@ -1,474 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Dress Lady Liberty! 👗</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:linear-gradient(160deg,#b8f0ff 0%,#c5f0e8 60%,#d4f5e9 100%);font-family:'Georgia',serif;min-height:100vh;padding:16px 16px 40px;}
-    .back{position:fixed;top:12px;left:12px;color:#0d5c3a;text-decoration:none;font-size:14px;background:rgba(255,255,255,0.9);padding:5px 14px;border-radius:20px;border:1px solid #a0dfc0;z-index:10;font-weight:bold;}
-    h1{font-size:clamp(22px,5vw,36px);color:#0d5c3a;text-align:center;margin:44px 0 4px;text-shadow:1px 1px 0 rgba(255,255,255,0.8);}
-    .sub{color:#1a7a4a;font-size:14px;text-align:center;margin-bottom:20px;font-style:italic;}
-    .game-area{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;max-width:960px;margin:0 auto;}
-
-    /* Liberty preview panel */
-    .liberty-display{
-      background:linear-gradient(160deg,#e8f8ff,#e0f7ed);
-      border:2px solid #7dd8c0;border-radius:24px;padding:24px 20px 16px;
-      min-width:260px;max-width:300px;
-      display:flex;flex-direction:column;align-items:center;
-      box-shadow:0 6px 24px rgba(0,150,100,0.13);
-      position:relative;
-    }
-    .liberty-display h3{color:#0d5c3a;font-size:13px;margin-bottom:14px;text-transform:uppercase;letter-spacing:2px;opacity:0.8;}
-    #liberty-canvas{border-radius:16px;border:2px solid rgba(125,216,200,0.4);box-shadow:0 4px 16px rgba(0,0,0,0.1);}
-    #outfit-label{font-size:12px;color:#1a7a4a;margin-top:10px;text-align:center;min-height:18px;font-style:italic;line-height:1.4;}
-
-    /* Options panels */
-    .panels{display:flex;flex-direction:column;gap:14px;max-width:520px;flex:1;}
-    .panel{background:rgba(255,255,255,0.92);border:2px solid #a0dfc0;border-radius:18px;padding:14px 16px;box-shadow:0 3px 12px rgba(0,0,0,0.07);}
-    .panel h3{color:#0d5c3a;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-    .options{display:flex;flex-wrap:wrap;gap:8px;}
-    .opt-btn{
-      background:#e8f5e9;border:2px solid #a0dfc0;border-radius:12px;
-      padding:7px 11px;cursor:pointer;font-size:18px;
-      transition:transform 0.15s,border-color 0.15s,background 0.15s,box-shadow 0.15s;
-      font-family:inherit;color:#333;font-size:13px;
-    }
-    .opt-btn:hover{transform:scale(1.12);border-color:#2ea043;box-shadow:0 3px 10px rgba(46,160,67,0.2);}
-    .opt-btn.active{border-color:#2ea043;background:linear-gradient(135deg,#c8e6c9,#b2dfdb);transform:scale(1.08);box-shadow:0 3px 10px rgba(46,160,67,0.25);}
-    .color-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-    .color-swatch{
-      width:34px;height:34px;border-radius:50%;cursor:pointer;
-      border:3px solid transparent;
-      transition:transform 0.15s,border-color 0.15s;
-      box-shadow:0 2px 6px rgba(0,0,0,0.18);
-    }
-    .color-swatch.active{border-color:#0d5c3a;transform:scale(1.25);box-shadow:0 3px 10px rgba(0,0,0,0.25);}
-    .color-swatch:hover{transform:scale(1.15);}
-
-    .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;}
-    button.big{background:linear-gradient(135deg,#2ea043,#1a8a35);color:#fff;border:none;padding:12px 26px;font-size:15px;border-radius:24px;cursor:pointer;font-family:inherit;font-weight:bold;box-shadow:0 3px 12px rgba(46,160,67,0.3);transition:transform 0.15s,box-shadow 0.15s;}
-    button.big:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(46,160,67,0.35);}
-    button.big.orange{background:linear-gradient(135deg,#e8820c,#d4690a);}
-    button.big.orange:hover{box-shadow:0 6px 18px rgba(232,130,12,0.35);}
-    #save-msg{text-align:center;color:#2ea043;font-size:13px;margin-top:10px;min-height:20px;font-weight:bold;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dress Lady Liberty! 👗</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', serif;
+    background: linear-gradient(180deg, #87CEEB 0%, #b8e4f7 60%, #1a6b3c 60%, #0d4a28 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {
+    color: #fff;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+    font-size: 2.2rem;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    color: #e0f7e9;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+  }
+  .game-container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+  }
+  .character-stage {
+    background: linear-gradient(180deg, #c9eeff 0%, #a8d8ea 100%);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    border: 3px solid rgba(255,255,255,0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 280px;
+  }
+  .character-stage svg {
+    filter: drop-shadow(4px 8px 12px rgba(0,0,0,0.3));
+  }
+  .stage-label {
+    color: #2c7a4b;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 10px;
+  }
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 280px;
+    max-width: 340px;
+  }
+  .control-group {
+    background: rgba(255,255,255,0.92);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  }
+  .control-group h3 {
+    color: #2c7a4b;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .option-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .opt-btn {
+    background: #f0f9f4;
+    border: 2px solid #b2dfdb;
+    border-radius: 10px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #2c7a4b;
+    transition: all 0.2s;
+    font-family: Georgia, serif;
+  }
+  .opt-btn:hover { background: #c8f0dc; border-color: #4caf88; }
+  .opt-btn.active { background: #2c7a4b; color: #fff; border-color: #2c7a4b; }
+  .color-swatch {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 3px solid #ccc;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.active { border-color: #222; transform: scale(1.2); }
+  .share-btn {
+    background: linear-gradient(135deg, #2c7a4b, #1a5c38);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: Georgia, serif;
+    box-shadow: 0 4px 12px rgba(44,122,75,0.4);
+    transition: transform 0.2s;
+    width: 100%;
+  }
+  .share-btn:hover { transform: translateY(-2px); }
+  .waves {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    pointer-events: none;
+    z-index: 0;
+  }
+</style>
 </head>
 <body>
-  <a class="back" href="../index.html">← All Games</a>
-  <h1>👗 Dress Lady Liberty!</h1>
-  <p class="sub">Mix and match to make Lady Liberty totally fabulous! ✨</p>
 
-  <div class="game-area">
-    <div class="liberty-display">
-      <h3>✨ Your Lady Liberty ✨</h3>
-      <canvas id="liberty-canvas" width="220" height="300"></canvas>
-      <div id="outfit-label">Classic Liberty 🗽</div>
-    </div>
+<h1>👗 Dress Lady Liberty! 🗽</h1>
+<p class="subtitle">Style the Statue of Liberty your way ✨</p>
 
-    <div class="panels">
-      <div class="panel">
-        <h3>👑 Crown Style</h3>
-        <div class="options" id="crowns">
-          <button class="opt-btn active" data-cat="crown" data-val="classic">✨ Classic</button>
-          <button class="opt-btn" data-cat="crown" data-val="star">⭐ Star</button>
-          <button class="opt-btn" data-cat="crown" data-val="flower">🌸 Flower</button>
-          <button class="opt-btn" data-cat="crown" data-val="rainbow">🌈 Rainbow</button>
-          <button class="opt-btn" data-cat="crown" data-val="party">🎉 Party</button>
-          <button class="opt-btn" data-cat="crown" data-val="gold">👑 Gold</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>👗 Outfit</h3>
-        <div class="options" id="outfits">
-          <button class="opt-btn active" data-cat="outfit" data-val="robe">✨ Classic Robe</button>
-          <button class="opt-btn" data-cat="outfit" data-val="sunny">🌻 Sunny Dress</button>
-          <button class="opt-btn" data-cat="outfit" data-val="starry">⭐ Starry Gown</button>
-          <button class="opt-btn" data-cat="outfit" data-val="rainbow">🌈 Rainbow Robe</button>
-          <button class="opt-btn" data-cat="outfit" data-val="princess">💜 Princess</button>
-          <button class="opt-btn" data-cat="outfit" data-val="super">⚡ Superhero</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>🎀 Accessory</h3>
-        <div class="options" id="accessories">
-          <button class="opt-btn active" data-cat="acc" data-val="none">None</button>
-          <button class="opt-btn" data-cat="acc" data-val="scarf">🧣 Scarf</button>
-          <button class="opt-btn" data-cat="acc" data-val="heart">💓 Hearts</button>
-          <button class="opt-btn" data-cat="acc" data-val="wings">🦋 Wings</button>
-          <button class="opt-btn" data-cat="acc" data-val="flowers">🌺 Flowers</button>
-          <button class="opt-btn" data-cat="acc" data-val="shades">😎 Shades</button>
-          <button class="opt-btn" data-cat="acc" data-val="rainbow">🌈 Rainbow</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>🎨 Robe Color</h3>
-        <div class="color-row" id="colors"></div>
-      </div>
-    </div>
+<div class="game-container">
+  <div class="character-stage">
+    <svg id="libertyChar" width="220" height="420" viewBox="0 0 220 420" xmlns="http://www.w3.org/2000/svg">
+      <rect x="70" y="370" width="80" height="50" rx="4" fill="#b5a882"/>
+      <rect x="80" y="360" width="60" height="15" rx="3" fill="#c8bb94"/>
+      <g id="torchArm">
+        <rect x="148" y="145" width="16" height="55" rx="8" fill="#c0a882" transform="rotate(-30 156 172)"/>
+        <rect x="160" y="110" width="14" height="50" rx="7" fill="#c0a882" transform="rotate(-15 167 135)"/>
+        <rect x="172" y="72" width="10" height="38" rx="5" fill="#8B6914"/>
+        <ellipse cx="177" cy="62" rx="10" ry="16" fill="#FFB347" opacity="0.9"/>
+        <ellipse cx="177" cy="58" rx="6" ry="11" fill="#FFD700"/>
+        <ellipse cx="177" cy="55" rx="3" ry="7" fill="#fff7a0"/>
+        <ellipse cx="177" cy="60" rx="14" ry="18" fill="#FFB347" opacity="0.25"/>
+      </g>
+      <g id="leftArm">
+        <rect x="55" y="148" width="16" height="60" rx="8" fill="#c0a882" transform="rotate(15 63 178)"/>
+        <rect x="38" y="200" width="30" height="22" rx="4" fill="#c8bb94" stroke="#8B6914" stroke-width="1.5"/>
+        <text x="53" y="215" text-anchor="middle" font-size="6" fill="#6b4f12">JULY IV</text>
+      </g>
+      <g id="robe">
+        <path id="robeMain" d="M78 185 Q60 200 52 270 Q45 330 50 370 L170 370 Q175 330 168 270 Q162 200 142 185 Z" fill="#5ba87a"/>
+        <path d="M95 190 Q88 230 85 280 Q84 320 86 360" stroke="rgba(0,0,0,0.12)" stroke-width="2" fill="none"/>
+        <path d="M110 192 Q108 240 107 290 Q107 330 108 365" stroke="rgba(0,0,0,0.1)" stroke-width="2" fill="none"/>
+        <path d="M125 190 Q128 235 130 285 Q132 325 130 362" stroke="rgba(0,0,0,0.1)" stroke-width="2" fill="none"/>
+        <path d="M88 190 Q82 225 80 270" stroke="rgba(255,255,255,0.3)" stroke-width="3" fill="none"/>
+        <path d="M52 355 Q90 348 110 350 Q135 348 168 355" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" fill="none"/>
+        <rect x="75" y="210" width="70" height="10" rx="5" fill="rgba(0,0,0,0.12)"/>
+      </g>
+      <path d="M90 185 Q110 195 130 185 Q125 175 110 172 Q95 175 90 185Z" fill="#c0a882"/>
+      <rect x="103" y="148" width="14" height="28" rx="7" fill="#d4b896"/>
+      <ellipse cx="110" cy="130" rx="28" ry="34" fill="#d4b896"/>
+      <ellipse cx="110" cy="135" rx="22" ry="26" fill="rgba(255,255,255,0.1)"/>
+      <ellipse cx="100" cy="124" rx="4" ry="5" fill="white"/>
+      <ellipse cx="120" cy="124" rx="4" ry="5" fill="white"/>
+      <ellipse cx="100" cy="125" rx="2.5" ry="3" fill="#5c3d1e"/>
+      <ellipse cx="120" cy="125" rx="2.5" ry="3" fill="#5c3d1e"/>
+      <circle cx="101" cy="124" r="1" fill="white"/>
+      <circle cx="121" cy="124" r="1" fill="white"/>
+      <path d="M95 118 Q100 115 105 118" stroke="#7a5230" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M115 118 Q120 115 125 118" stroke="#7a5230" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M108 130 Q106 136 109 138 Q112 136 112 133" stroke="#b08060" stroke-width="1.2" fill="none"/>
+      <path d="M101 143 Q110 150 119 143" stroke="#c07060" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="96" cy="140" rx="6" ry="4" fill="rgba(255,150,120,0.3)"/>
+      <ellipse cx="124" cy="140" rx="6" ry="4" fill="rgba(255,150,120,0.3)"/>
+      <path d="M82 118 Q84 100 90 95 Q95 92 98 98" stroke="#7a5230" stroke-width="3" fill="none"/>
+      <path d="M138 118 Q136 100 130 95 Q125 92 122 98" stroke="#7a5230" stroke-width="3" fill="none"/>
+      <g id="crown">
+        <path d="M83 100 Q85 88 110 85 Q135 88 137 100 Z" fill="#C5A028"/>
+        <rect x="83" y="98" width="54" height="8" rx="2" fill="#C5A028"/>
+        <polygon points="88,100 85,72 94,96" fill="#D4AF37"/>
+        <polygon points="100,98 98,68 107,95" fill="#D4AF37"/>
+        <polygon points="110,97 110,65 119,95" fill="#D4AF37"/>
+        <polygon points="120,98 122,68 130,96" fill="#D4AF37"/>
+        <polygon points="130,100 135,72 138,98" fill="#D4AF37"/>
+        <circle cx="88" cy="100" r="3" fill="#50fa7b"/>
+        <circle cx="100" cy="98" r="3" fill="#ff79c6"/>
+        <circle cx="110" cy="97" r="3" fill="#8be9fd"/>
+        <circle cx="120" cy="98" r="3" fill="#ffb86c"/>
+        <circle cx="130" cy="100" r="3" fill="#bd93f9"/>
+        <path d="M87 100 Q110 90 133 100" stroke="rgba(255,255,200,0.5)" stroke-width="1.5" fill="none"/>
+      </g>
+      <g id="outfitLayer"></g>
+      <g id="accessoryLayer"></g>
+    </svg>
+    <div class="stage-label">✨ Lady Liberty ✨</div>
   </div>
 
-  <div class="actions">
-    <button class="big" onclick="randomize()">🎲 Surprise Me!</button>
-    <button class="big orange" onclick="saveIt()">📸 Save My Look!</button>
+  <div class="controls">
+    <div class="control-group">
+      <h3>🎨 Robe Color</h3>
+      <div class="option-row" id="colorOptions">
+        <div class="color-swatch active" style="background:#5ba87a" data-color="#5ba87a" title="Classic Green" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#4a90d9" data-color="#4a90d9" title="Ocean Blue" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#9b59b6" data-color="#9b59b6" title="Royal Purple" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#e74c3c" data-color="#e74c3c" title="Liberty Red" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#f39c12" data-color="#f39c12" title="Golden" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#ec407a" data-color="#ec407a" title="Rose Pink" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#00bcd4" data-color="#00bcd4" title="Aqua" onclick="setColor(this)"></div>
+        <div class="color-swatch" style="background:#ff7043" data-color="#ff7043" title="Sunset" onclick="setColor(this)"></div>
+      </div>
+    </div>
+    <div class="control-group">
+      <h3>👑 Crown Style</h3>
+      <div class="option-row" id="crownOptions">
+        <button class="opt-btn active" onclick="setCrown(this,'classic')">Classic</button>
+        <button class="opt-btn" onclick="setCrown(this,'tiara')">Tiara</button>
+        <button class="opt-btn" onclick="setCrown(this,'flowers')">Floral</button>
+        <button class="opt-btn" onclick="setCrown(this,'none')">None</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <h3>👗 Outfit Style</h3>
+      <div class="option-row" id="outfitOptions">
+        <button class="opt-btn active" onclick="setOutfit(this,'classic')">Classic</button>
+        <button class="opt-btn" onclick="setOutfit(this,'gown')">Ball Gown</button>
+        <button class="opt-btn" onclick="setOutfit(this,'stars')">Star Spangled</button>
+        <button class="opt-btn" onclick="setOutfit(this,'summer')">Summer</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <h3>🎠 Accessory</h3>
+      <div class="option-row" id="accessoryOptions">
+        <button class="opt-btn active" onclick="setAccessory(this,'none')">None</button>
+        <button class="opt-btn" onclick="setAccessory(this,'necklace')">Necklace</button>
+        <button class="opt-btn" onclick="setAccessory(this,'bow')">Bow</button>
+        <button class="opt-btn" onclick="setAccessory(this,'scarf')">Scarf</button>
+      </div>
+    </div>
+    <button class="share-btn" onclick="alert('Looking gorgeous, Liberty! 🗽✨')">Show off your Liberty!</button>
   </div>
-  <div id="save-msg"></div>
+</div>
 
-  <script>
-    const COLORS=[
-      {c:'#5b9e6e',label:'Liberty Green'},{c:'#7dd8f8',label:'Sky Blue'},
-      {c:'#ff9ff3',label:'Pretty Pink'},{c:'#ffd700',label:'Golden'},
-      {c:'#ff6b6b',label:'Cherry Red'},{c:'#a29bfe',label:'Lavender'},
-      {c:'#fdcb6e',label:'Peachy'},{c:'#ffffff',label:'Pure White'},
-      {c:'#fd79a8',label:'Hot Pink'},{c:'#00cec9',label:'Teal'},
-      {c:'#6c5ce7',label:'Purple'},{c:'#e17055',label:'Coral'},
-    ];
-    const colorsDivEl=document.getElementById('colors');
-    let currentColor=COLORS[0].c, currentColorLabel=COLORS[0].label;
-    COLORS.forEach(cl=>{
-      const s=document.createElement('div');
-      s.className='color-swatch'+(cl.c===currentColor?' active':'');
-      s.style.background=cl.c; s.title=cl.label;
-      s.onclick=()=>{ document.querySelectorAll('.color-swatch').forEach(x=>x.classList.remove('active')); s.classList.add('active'); currentColor=cl.c; currentColorLabel=cl.label; draw(); };
-      colorsDivEl.appendChild(s);
-    });
+<svg class="waves" viewBox="0 0 1440 80" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a8acd" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#0d5fa0" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#waveGrad)">
+    <animate attributeName="d" dur="4s" repeatCount="indefinite"
+      values="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z;
+              M0,20 C360,60 1080,20 1440,60 L1440,80 L0,80 Z;
+              M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z"/>
+  </path>
+</svg>
 
-    let choices={crown:'classic',outfit:'robe',acc:'none'};
-    document.querySelectorAll('.opt-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const cat=btn.dataset.cat;
-        document.querySelectorAll(`[data-cat="${cat}"]`).forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active'); choices[cat]=btn.dataset.val; draw();
-      });
-    });
-
-    const canvas=document.getElementById('liberty-canvas');
-    const ctx=canvas.getContext('2d');
-    const W=220,H=300;
-
-    function roundRect(x,y,w,h,r){
-      ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
-      ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
-      ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
-      ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
-    }
-
-    function draw(){
-      ctx.clearRect(0,0,W,H);
-
-      // === BACKGROUND ===
-      // Sky gradient
-      const sky=ctx.createLinearGradient(0,0,0,H);
-      sky.addColorStop(0,'#87ceeb'); sky.addColorStop(0.65,'#b8f0ff'); sky.addColorStop(1,'#d4f5e9');
-      ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
-
-      // Fluffy clouds
-      function cloud(cx,cy,s){
-        ctx.fillStyle='rgba(255,255,255,0.85)';
-        [[0,0,s],[s*0.7,-s*0.4,s*0.7],[s*1.4,0,s*0.6],[-s*0.5,0,s*0.5]].forEach(([dx,dy,r])=>{
-          ctx.beginPath();ctx.arc(cx+dx,cy+dy,r,0,Math.PI*2);ctx.fill();
-        });
-      }
-      cloud(30,30,18); cloud(170,20,14); cloud(140,50,12);
-
-      // Sun
-      const sunGrad=ctx.createRadialGradient(185,25,4,185,25,22);
-      sunGrad.addColorStop(0,'#fff7aa');sunGrad.addColorStop(0.5,'#ffd700');sunGrad.addColorStop(1,'rgba(255,180,0,0)');
-      ctx.fillStyle=sunGrad; ctx.beginPath();ctx.arc(185,25,22,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#ffd700';ctx.beginPath();ctx.arc(185,25,11,0,Math.PI*2);ctx.fill();
-
-      // Water
-      const water=ctx.createLinearGradient(0,H-50,0,H);
-      water.addColorStop(0,'#7dd8f8');water.addColorStop(1,'#3ab5e5');
-      ctx.fillStyle=water;ctx.fillRect(0,H-50,W,50);
-      // Wave
-      ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=3;
-      ctx.beginPath();ctx.moveTo(0,H-38);
-      for(let x=0;x<=W;x+=20) ctx.quadraticCurveTo(x+10,H-44,x+20,H-38);
-      ctx.stroke();
-
-      // Ground/pedestal base
-      ctx.fillStyle='#d4c4a0'; roundRect(65,H-90,90,20,6); ctx.fill();
-      ctx.fillStyle='#e8d5b0'; roundRect(70,H-108,80,20,6); ctx.fill();
-      ctx.fillStyle='#f0e0c0'; roundRect(75,H-114,70,10,4); ctx.fill();
-
-      // === ROBE / BODY ===
-      const cx=110; // center x
-
-      // Choose robe color/style
-      if(choices.outfit==='rainbow'){
-        const rg=ctx.createLinearGradient(65,140,155,H-90);
-        ['#ff6b6b','#ffd700','#7fff7f','#7dd8f8','#a29bfe','#ff9ff3'].forEach((c,i,a)=>rg.addColorStop(i/(a.length-1),c));
-        ctx.fillStyle=rg;
-      } else if(choices.outfit==='starry'){
-        ctx.fillStyle='#1a237e';
-      } else if(choices.outfit==='super'){
-        ctx.fillStyle='#ef5350';
-      } else if(choices.outfit==='sunny'){
-        ctx.fillStyle='#ffd700';
-      } else if(choices.outfit==='princess'){
-        ctx.fillStyle='#ce93d8';
-      } else {
-        ctx.fillStyle=currentColor;
-      }
-      // Robe trapezoid with rounded bottom
-      ctx.beginPath();
-      ctx.moveTo(cx-32,142);ctx.lineTo(cx+32,142);
-      ctx.lineTo(cx+52,H-90);ctx.lineTo(cx-52,H-90);
-      ctx.closePath();ctx.fill();
-      ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=1.5;ctx.stroke();
-
-      // Robe fold lines for depth
-      ctx.strokeStyle='rgba(0,0,0,0.07)';ctx.lineWidth=1;
-      [[cx-10,145,cx-16,H-90],[cx+8,145,cx+14,H-90]].forEach(([x1,y1,x2,y2])=>{
-        ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-      });
-
-      // Outfit-specific details
-      if(choices.outfit==='starry'){
-        ctx.fillStyle='rgba(255,255,255,0.9)';
-        [[cx-15,160],[cx+12,173],[cx-8,195],[cx+16,208],[cx-18,220],[cx+5,232]].forEach(([x,y])=>{
-          ctx.font='10px serif';ctx.textAlign='center';ctx.fillText('★',x,y);
-        });
-        ctx.textAlign='left';
-      } else if(choices.outfit==='super'){
-        // Cape
-        ctx.fillStyle='rgba(255,200,0,0.9)';
-        ctx.beginPath();ctx.moveTo(cx+30,146);ctx.lineTo(cx+60,175);ctx.lineTo(cx+52,H-90);ctx.lineTo(cx+32,H-90);ctx.closePath();ctx.fill();
-        ctx.fillStyle='#ffd700';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.fillText('S',cx,172);ctx.textAlign='left';
-      } else if(choices.outfit==='sunny'){
-        ['🌸','🌼','🌻'].forEach((fl,i)=>{ ctx.font='15px serif';ctx.textAlign='center';ctx.fillText(fl,cx-12+i*12,165+i*18);});
-        ctx.textAlign='left';
-      } else if(choices.outfit==='princess'){
-        ctx.fillStyle='rgba(255,255,255,0.6)';
-        [[cx-14,158],[cx+14,168],[cx-8,190],[cx+12,200],[cx-16,218]].forEach(([x,y])=>{ctx.font='13px serif';ctx.textAlign='center';ctx.fillText('✨',x,y);});
-        ctx.textAlign='left';
-      }
-
-      // Waist sash
-      ctx.fillStyle='rgba(0,0,0,0.08)'; ctx.fillRect(cx-32,150,64,10);
-      ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.fillRect(cx-32,150,64,4);
-
-      // === TORCH ARM (right, raised) ===
-      const skinColor='#f5c28a';
-      ctx.fillStyle=skinColor;
-      ctx.beginPath();ctx.moveTo(cx+28,142);ctx.lineTo(cx+44,105);ctx.lineTo(cx+52,109);ctx.lineTo(cx+36,146);ctx.closePath();ctx.fill();
-      ctx.strokeStyle='rgba(180,120,60,0.3)';ctx.lineWidth=1;ctx.stroke();
-
-      // Torch handle
-      ctx.fillStyle='#6b4226';ctx.fillRect(cx+42,76,6,32);
-      // Torch base ring
-      ctx.fillStyle='#a0780a';ctx.beginPath();ctx.ellipse(cx+45,108,6,3,0,0,Math.PI*2);ctx.fill();
-      // Flame - glow
-      ctx.fillStyle='rgba(255,120,0,0.3)';ctx.beginPath();ctx.arc(cx+45,64,16,0,Math.PI*2);ctx.fill();
-      // Flame layers
-      [[16,14,'#ff4500'],[11,10,'#ff7f00'],[7,7,'#ffd700'],[4,4,'rgba(255,255,255,0.9)']].forEach(([rx,ry,col])=>{
-        ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(cx+45,64,rx,ry,0,0,Math.PI*2);ctx.fill();
-      });
-
-      // === LEFT ARM (tablet side) ===
-      ctx.fillStyle=skinColor;
-      ctx.beginPath();ctx.moveTo(cx-28,142);ctx.lineTo(cx-50,168);ctx.lineTo(cx-42,174);ctx.lineTo(cx-20,148);ctx.closePath();ctx.fill();
-      // Tablet
-      ctx.fillStyle='#d4c49a';ctx.strokeStyle='#a89060';ctx.lineWidth=2;
-      roundRect(cx-64,162,22,30,3);ctx.fill();ctx.stroke();
-      ctx.fillStyle='#8b7040';ctx.font='8px sans-serif';ctx.textAlign='center';
-      ctx.fillText('LAW',cx-53,176);ctx.textAlign='left';
-
-      // === NECK ===
-      ctx.fillStyle=skinColor;ctx.beginPath();ctx.rect(cx-10,118,20,28);ctx.fill();
-
-      // === HEAD ===
-      // Head shape
-      ctx.fillStyle=skinColor;
-      ctx.beginPath();ctx.ellipse(cx,104,24,28,-0.05,0,Math.PI*2);ctx.fill();
-      ctx.strokeStyle='rgba(180,120,60,0.2)';ctx.lineWidth=1;ctx.stroke();
-
-      // Hair
-      ctx.fillStyle='#7a5c38';
-      ctx.beginPath();ctx.ellipse(cx,87,22,11,-0.05,Math.PI,Math.PI*2);ctx.fill();
-      // Side hair wisps
-      ctx.beginPath();ctx.moveTo(cx-22,95);ctx.quadraticCurveTo(cx-32,100,cx-26,112);ctx.lineWidth=5;ctx.strokeStyle='#7a5c38';ctx.stroke();
-      ctx.beginPath();ctx.moveTo(cx+22,95);ctx.quadraticCurveTo(cx+32,100,cx+26,112);ctx.stroke();
-
-      // Eyes - big and friendly
-      // Left eye
-      ctx.fillStyle='white';ctx.beginPath();ctx.ellipse(cx-9,100,6,7,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#5d3a1a';ctx.beginPath();ctx.ellipse(cx-9,101,4,5,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#1a0a00';ctx.beginPath();ctx.ellipse(cx-9,101,2.5,3,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='white';ctx.beginPath();ctx.arc(cx-8,99,1.2,0,Math.PI*2);ctx.fill();
-      // Eyelashes left
-      ctx.strokeStyle='#3d2000';ctx.lineWidth=1.5;
-      [[-12,95,-14,92],[-9,94,-9,91],[-6,95,-4,92]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1+cx-cx,y1);ctx.lineTo(x2+cx-cx,y2);ctx.stroke();});
-
-      // Right eye
-      ctx.fillStyle='white';ctx.beginPath();ctx.ellipse(cx+9,100,6,7,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#5d3a1a';ctx.beginPath();ctx.ellipse(cx+9,101,4,5,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#1a0a00';ctx.beginPath();ctx.ellipse(cx+9,101,2.5,3,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='white';ctx.beginPath();ctx.arc(cx+10,99,1.2,0,Math.PI*2);ctx.fill();
-
-      // Eyebrows
-      ctx.strokeStyle='#5d3a1a';ctx.lineWidth=2;ctx.lineCap='round';
-      ctx.beginPath();ctx.moveTo(cx-15,93);ctx.quadraticCurveTo(cx-9,91,cx-3,93);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(cx+3,93);ctx.quadraticCurveTo(cx+9,91,cx+15,93);ctx.stroke();
-
-      // Nose
-      ctx.strokeStyle='rgba(150,80,30,0.4)';ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.moveTo(cx-2,105);ctx.quadraticCurveTo(cx-4,110,cx,111);ctx.quadraticCurveTo(cx+4,110,cx+2,105);ctx.stroke();
-
-      // Smile
-      ctx.strokeStyle='#8b4513';ctx.lineWidth=2.5;ctx.lineCap='round';
-      ctx.beginPath();ctx.arc(cx,110,8,0.2,Math.PI-0.2);ctx.stroke();
-      // Lip highlight
-      ctx.fillStyle='rgba(255,140,130,0.6)';ctx.beginPath();ctx.ellipse(cx,109,5,2,0,0,Math.PI);ctx.fill();
-
-      // Rosy cheeks
-      ctx.fillStyle='rgba(255,150,150,0.3)';
-      ctx.beginPath();ctx.ellipse(cx-16,108,7,4.5,0,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.ellipse(cx+16,108,7,4.5,0,0,Math.PI*2);ctx.fill();
-
-      // === CROWN ===
-      const cTop=73;
-      if(choices.crown==='classic'||choices.crown==='gold'){
-        const cCol=choices.crown==='gold'?'#ffd700':'#c8d8b0';
-        const cShadow=choices.crown==='gold'?'#b8860b':'#6b9a6b';
-        // Crown base band
-        const cg=ctx.createLinearGradient(cx-24,cTop+12,cx+24,cTop+12);
-        cg.addColorStop(0,cShadow);cg.addColorStop(0.5,cCol);cg.addColorStop(1,cShadow);
-        ctx.fillStyle=cg;
-        ctx.beginPath();ctx.rect(cx-24,cTop+8,48,10);ctx.fill();
-        // Crown spikes
-        ctx.fillStyle=cCol;
-        const spikes=[[cx-22,cTop+8],[cx-11,cTop-4],[cx,cTop+4],[cx+11,cTop-4],[cx+22,cTop+8]];
-        ctx.beginPath();ctx.moveTo(cx-24,cTop+18);
-        spikes.forEach(([x,y])=>ctx.lineTo(x,y));
-        ctx.lineTo(cx+24,cTop+18);ctx.closePath();ctx.fill();
-        ctx.strokeStyle=cShadow;ctx.lineWidth=1.5;ctx.stroke();
-        // Crown jewels
-        const jcols=['#ff6b6b','#7dd8f8','#ffd700','#a29bfe','#7fff7f'];
-        [cx-18,cx-9,cx,cx+9,cx+18].forEach((x,i)=>{
-          const jg=ctx.createRadialGradient(x,cTop+12,0,x,cTop+12,4);
-          jg.addColorStop(0,'white');jg.addColorStop(1,jcols[i]);
-          ctx.fillStyle=jg;ctx.beginPath();ctx.arc(x,cTop+12,4,0,Math.PI*2);ctx.fill();
-          ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=0.5;ctx.stroke();
-        });
-      } else if(choices.crown==='star'){
-        ctx.font='20px serif';ctx.textAlign='center';
-        ctx.fillText('⭐',cx,cTop+4);
-        ctx.font='14px serif';ctx.fillText('✨',cx-18,cTop+10);ctx.fillText('✨',cx+18,cTop+10);
-        ctx.textAlign='left';
-      } else if(choices.crown==='flower'){
-        ctx.font='22px serif';ctx.textAlign='center';
-        ctx.fillText('🌸',cx,cTop+4);
-        ctx.font='16px serif';ctx.fillText('🌺',cx-20,cTop+10);ctx.fillText('🌺',cx+20,cTop+10);
-        ctx.font='12px serif';ctx.fillText('🌼',cx-10,cTop-4);ctx.fillText('🌼',cx+10,cTop-4);
-        ctx.textAlign='left';
-      } else if(choices.crown==='rainbow'){
-        const rc=['#ff6b6b','#ff9f43','#ffd700','#7fff7f','#7dd8f8','#a29bfe','#ff9ff3'];
-        rc.forEach((c,i)=>{
-          ctx.strokeStyle=c;ctx.lineWidth=3.5;
-          ctx.beginPath();ctx.arc(cx,cTop+14,10+i*3.5,Math.PI,Math.PI*2);ctx.stroke();
-        });
-        ctx.font='14px serif';ctx.textAlign='center';ctx.fillText('🌈',cx,cTop+2);ctx.textAlign='left';
-      } else if(choices.crown==='party'){
-        ctx.font='22px serif';ctx.textAlign='center';
-        ctx.fillText('🎉',cx,cTop+4);
-        ctx.font='16px serif';ctx.fillText('🎊',cx-20,cTop+10);ctx.fillText('🎊',cx+20,cTop+10);
-        ctx.font='12px serif';ctx.fillText('✨',cx-10,cTop-2);ctx.fillText('✨',cx+10,cTop-2);
-        ctx.textAlign='left';
-      }
-
-      // === ACCESSORIES ===
-      if(choices.acc==='scarf'){
-        const scarfGrad=ctx.createLinearGradient(cx-34,126,cx+34,130);
-        scarfGrad.addColorStop(0,'#ff6b6b');scarfGrad.addColorStop(0.5,'#ffd700');scarfGrad.addColorStop(1,'#ff6b6b');
-        ctx.strokeStyle=scarfGrad;ctx.lineWidth=8;ctx.lineCap='round';
-        ctx.beginPath();ctx.moveTo(cx-34,128);ctx.bezierCurveTo(cx-15,134,cx+15,134,cx+34,128);ctx.stroke();
-        ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=2;
-        ctx.beginPath();ctx.moveTo(cx-34,128);ctx.bezierCurveTo(cx-15,134,cx+15,134,cx+34,128);ctx.stroke();
-        // Scarf tail
-        ctx.strokeStyle=scarfGrad;ctx.lineWidth=7;ctx.lineCap='round';
-        ctx.beginPath();ctx.moveTo(cx+25,130);ctx.bezierCurveTo(cx+35,145,cx+30,160,cx+20,170);ctx.stroke();
-      } else if(choices.acc==='heart'){
-        ctx.font='18px serif';ctx.textAlign='center';
-        ctx.fillText('💗',cx,121);
-        ctx.font='14px serif';
-        ctx.fillText('💕',cx-32,138);ctx.fillText('💕',cx+32,138);
-        ctx.font='12px serif';
-        ctx.fillText('💓',cx-28,165);ctx.fillText('💓',cx+28,165);
-        ctx.textAlign='left';
-      } else if(choices.acc==='wings'){
-        // Left wing
-        ctx.fillStyle='rgba(200,240,255,0.75)';
-        ctx.beginPath();ctx.moveTo(cx-28,145);ctx.bezierCurveTo(cx-80,130,cx-90,160,cx-60,175);ctx.bezierCurveTo(cx-45,180,cx-32,165,cx-28,145);ctx.fill();
-        ctx.strokeStyle='rgba(100,180,220,0.5)';ctx.lineWidth=1;ctx.stroke();
-        // Wing detail lines
-        ctx.strokeStyle='rgba(100,180,220,0.4)';ctx.lineWidth=1;
-        [[cx-28,145,cx-70,148],[cx-28,148,cx-65,162],[cx-28,152,cx-55,172]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
-        // Right wing
-        ctx.fillStyle='rgba(200,240,255,0.75)';
-        ctx.beginPath();ctx.moveTo(cx+28,145);ctx.bezierCurveTo(cx+80,130,cx+90,160,cx+60,175);ctx.bezierCurveTo(cx+45,180,cx+32,165,cx+28,145);ctx.fill();
-        ctx.strokeStyle='rgba(100,180,220,0.5)';ctx.lineWidth=1;ctx.stroke();
-        [[cx+28,145,cx+70,148],[cx+28,148,cx+65,162],[cx+28,152,cx+55,172]].forEach(([x1,y1,x2,y2])=>{ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();});
-      } else if(choices.acc==='flowers'){
-        ctx.font='16px serif';ctx.textAlign='center';
-        ctx.fillText('🌺',cx,121);
-        [[cx-36,144],[cx+36,144],[cx-42,172],[cx+42,172],[cx-38,198],[cx+38,198]].forEach(([x,y])=>{ctx.font='14px serif';ctx.fillText('🌸',x,y);});
-        ctx.textAlign='left';
-      } else if(choices.acc==='shades'){
-        // Stylish shades
-        ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.lineCap='round';
-        // Frames
-        ctx.fillStyle='rgba(0,100,200,0.45)';
-        roundRect(cx-22,96,17,12,5);ctx.fill();ctx.stroke();
-        roundRect(cx+5,96,17,12,5);ctx.fill();ctx.stroke();
-        // Bridge
-        ctx.beginPath();ctx.moveTo(cx-5,101);ctx.lineTo(cx+5,101);ctx.stroke();
-        // Shine
-        ctx.fillStyle='rgba(255,255,255,0.4)';
-        ctx.beginPath();ctx.ellipse(cx-17,98,4,2,0.3,0,Math.PI*2);ctx.fill();
-        ctx.beginPath();ctx.ellipse(cx+10,98,4,2,0.3,0,Math.PI*2);ctx.fill();
-      } else if(choices.acc==='rainbow'){
-        ctx.font='18px serif';ctx.textAlign='center';
-        ctx.fillText('🌈',cx,120);
-        ctx.font='14px serif';
-        ctx.fillText('🌈',cx-36,148);ctx.fillText('🌈',cx+36,148);
-        ctx.textAlign='left';
-      }
-
-      // Update label
-      const crownL={classic:'Classic Crown ✨',star:'Star Crown ⭐',flower:'Flower Crown 🌸',rainbow:'Rainbow Crown 🌈',party:'Party Crown 🎉',gold:'Gold Crown 👑'};
-      const outfitL={robe:'Classic Robe',sunny:'Sunny Dress 🌻',starry:'Starry Gown ⭐',rainbow:'Rainbow Robe 🌈',princess:'Princess Gown 💜',super:'Superhero ⚡'};
-      const accL={none:'',scarf:' · Scarf 🧣',heart:' · Hearts 💓',wings:' · Wings 🦋',flowers:' · Flowers 🌺',shades:' · Shades 😎',rainbow:' · Rainbows 🌈'};
-      document.getElementById('outfit-label').innerHTML=
-        `<strong>${outfitL[choices.outfit]}</strong> · ${crownL[choices.crown]}${accL[choices.acc]}<br><span style="color:#888">${currentColorLabel}</span>`;
-    }
-
-    function randomize(){
-      const cO=['classic','star','flower','rainbow','party','gold'];
-      const oO=['robe','sunny','starry','rainbow','princess','super'];
-      const aO=['none','scarf','heart','wings','flowers','shades','rainbow'];
-      choices={crown:cO[Math.floor(Math.random()*cO.length)],outfit:oO[Math.floor(Math.random()*oO.length)],acc:aO[Math.floor(Math.random()*aO.length)]};
-      const rc=COLORS[Math.floor(Math.random()*COLORS.length)];
-      currentColor=rc.c;currentColorLabel=rc.label;
-      document.querySelectorAll('.opt-btn').forEach(b=>b.classList.toggle('active',b.dataset.val===choices[b.dataset.cat]));
-      document.querySelectorAll('.color-swatch').forEach(s=>s.classList.toggle('active',s.title===currentColorLabel));
-      draw();
-    }
-
-    function saveIt(){
-      const link=document.createElement('a');
-      link.download='my-lady-liberty.png';
-      link.href=canvas.toDataURL('image/png');
-      link.click();
-      const msg=document.getElementById('save-msg');
-      msg.textContent='📸 Saved! Lady Liberty loves her new look! 💚';
-      setTimeout(()=>msg.textContent='',3000);
-    }
-
-    draw();
-  </script>
+<script>
+function setColor(el) {
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('robeMain').setAttribute('fill', el.dataset.color);
+}
+function setCrown(el, style) {
+  document.querySelectorAll('#crownOptions .opt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const crown = document.getElementById('crown');
+  if (style === 'none') { crown.style.display = 'none'; }
+  else if (style === 'classic') {
+    crown.style.display = '';
+    crown.innerHTML = `<path d="M83 100 Q85 88 110 85 Q135 88 137 100 Z" fill="#C5A028"/><rect x="83" y="98" width="54" height="8" rx="2" fill="#C5A028"/><polygon points="88,100 85,72 94,96" fill="#D4AF37"/><polygon points="100,98 98,68 107,95" fill="#D4AF37"/><polygon points="110,97 110,65 119,95" fill="#D4AF37"/><polygon points="120,98 122,68 130,96" fill="#D4AF37"/><polygon points="130,100 135,72 138,98" fill="#D4AF37"/><circle cx="88" cy="100" r="3" fill="#50fa7b"/><circle cx="100" cy="98" r="3" fill="#ff79c6"/><circle cx="110" cy="97" r="3" fill="#8be9fd"/><circle cx="120" cy="98" r="3" fill="#ffb86c"/><circle cx="130" cy="100" r="3" fill="#bd93f9"/>`;
+  } else if (style === 'tiara') {
+    crown.style.display = '';
+    crown.innerHTML = `<path d="M83 104 Q110 92 137 104" stroke="#D4AF37" stroke-width="4" fill="none"/><circle cx="110" cy="92" r="5" fill="#D4AF37"/><circle cx="95" cy="97" r="3.5" fill="#D4AF37"/><circle cx="125" cy="97" r="3.5" fill="#D4AF37"/><circle cx="83" cy="103" r="2.5" fill="#D4AF37"/><circle cx="137" cy="103" r="2.5" fill="#D4AF37"/><circle cx="110" cy="92" r="3" fill="#8be9fd"/><circle cx="95" cy="97" r="2" fill="#ff79c6"/><circle cx="125" cy="97" r="2" fill="#50fa7b"/>`;
+  } else if (style === 'flowers') {
+    crown.style.display = '';
+    crown.innerHTML = `<path d="M83 104 Q110 95 137 104" stroke="#7cb87a" stroke-width="3" fill="none"/><circle cx="93" cy="100" r="7" fill="#ff79c6" opacity="0.9"/><circle cx="110" cy="94" r="8" fill="#ff5e57" opacity="0.9"/><circle cx="127" cy="100" r="7" fill="#ffb86c" opacity="0.9"/><circle cx="93" cy="100" r="3" fill="#fff"/><circle cx="110" cy="94" r="3.5" fill="#fff"/><circle cx="127" cy="100" r="3" fill="#fff"/><circle cx="82" cy="104" r="5" fill="#bd93f9" opacity="0.8"/><circle cx="138" cy="104" r="5" fill="#50fa7b" opacity="0.8"/>`;
+  }
+}
+function setOutfit(el, style) {
+  document.querySelectorAll('#outfitOptions .opt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const layer = document.getElementById('outfitLayer');
+  if (style === 'classic') { layer.innerHTML = ''; }
+  else if (style === 'gown') { layer.innerHTML = `<path d="M75 210 Q55 250 45 310 Q40 345 48 370 L172 370 Q180 345 175 310 Q165 250 145 210 Z" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/><path d="M80 215 Q75 260 73 310" stroke="rgba(255,255,255,0.35)" stroke-width="2" fill="none"/><path d="M140 215 Q145 260 147 310" stroke="rgba(255,255,255,0.35)" stroke-width="2" fill="none"/>`; }
+  else if (style === 'stars') { layer.innerHTML = `<text x="82" y="230" font-size="14" fill="rgba(255,255,255,0.85)">&#9733;</text><text x="125" y="245" font-size="10" fill="rgba(255,255,255,0.7)">&#9733;</text><text x="95" y="270" font-size="12" fill="rgba(255,255,255,0.8)">&#9733;</text><text x="118" y="300" font-size="14" fill="rgba(255,255,255,0.75)">&#9733;</text><text x="78" y="315" font-size="10" fill="rgba(255,255,255,0.65)">&#9733;</text><rect x="52" y="255" width="116" height="5" rx="2" fill="rgba(220,50,50,0.35)"/><rect x="52" y="275" width="116" height="5" rx="2" fill="rgba(220,50,50,0.3)"/>`; }
+  else if (style === 'summer') { layer.innerHTML = `<path d="M80 200 Q110 208 140 200 Q138 215 110 220 Q82 215 80 200Z" fill="rgba(255,200,100,0.6)" stroke="rgba(255,180,50,0.8)" stroke-width="1"/><circle cx="90" cy="225" r="4" fill="rgba(255,120,120,0.7)"/><circle cx="110" cy="220" r="4" fill="rgba(255,120,120,0.7)"/><circle cx="130" cy="225" r="4" fill="rgba(255,120,120,0.7)"/>`; }
+}
+function setAccessory(el, style) {
+  document.querySelectorAll('#accessoryOptions .opt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const layer = document.getElementById('accessoryLayer');
+  if (style === 'none') { layer.innerHTML = ''; }
+  else if (style === 'necklace') { layer.innerHTML = `<path d="M95 175 Q110 182 125 175" stroke="#D4AF37" stroke-width="2.5" fill="none"/><circle cx="103" cy="179" r="3" fill="#D4AF37"/><circle cx="110" cy="181" r="4" fill="#D4AF37"/><circle cx="117" cy="179" r="3" fill="#D4AF37"/><circle cx="110" cy="185" r="3" fill="#8be9fd"/>`; }
+  else if (style === 'bow') { layer.innerHTML = `<path d="M95 178 Q102 170 110 178 Q118 170 125 178 Q118 186 110 178 Q102 186 95 178Z" fill="#ff79c6"/><circle cx="110" cy="178" r="4" fill="#ff5e8a"/>`; }
+  else if (style === 'scarf') { layer.innerHTML = `<path d="M88 182 Q110 195 132 182 Q128 200 120 205 Q110 210 100 205 Q92 200 88 182Z" fill="#ff7043" opacity="0.85"/><path d="M120 195 Q125 220 118 240" stroke="#ff7043" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.75"/>`; }
+}
+</script>
 </body>
 </html>
